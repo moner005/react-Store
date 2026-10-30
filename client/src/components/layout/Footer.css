@@ -1,0 +1,133 @@
+.footer {
+  background-color: #111111;
+  color: #ffffff;
+  padding: 28px 7% 18px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.2fr 1fr 1fr;
+  gap: 20px;
+  position: relative;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+
+.footer-brand {
+  border-right: 1px solid #45413a;
+  padding-right: 20px;
+}
+
+.footer-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  color: #c8a96b;
+  text-decoration: none;
+  font-family: Georgia, serif;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+
+.footer-crown {
+  color: #c8a96b;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.footer-brand p {
+  line-height: 1.7;
+  color: #dddddd;
+  margin: 0;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-column h3 {
+  color: #c8a96b;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 5px;
+}
+
+.footer-column a {
+  color: #eeeeee;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-column a:hover {
+  color: #c8a96b;
+}
+
+.social-icons {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.social-icons a {
+  color: #c8a96b;
+  font-size: 23px;
+  font-weight: bold;
+}
+
+.footer-motto {
+  border-left: 1px solid #45413a;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.footer-motto p {
+  color: #c8a96b;
+  font-family: Georgia, serif;
+  font-style: italic;
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+
+.footer-bottom {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #aaaaaa;
+  font-size: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #292929;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+  .footer {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 20px;
+  }
+
+  .footer-motto {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 550px) {
+  .footer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 28px 6% 18px;
+  }
+
+  .footer-brand {
+    border-right: none;
+  }
+
+  .footer-motto {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

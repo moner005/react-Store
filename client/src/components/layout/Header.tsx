@@ -2,19 +2,33 @@ import { Link, NavLink } from 'react-router-dom'
 import { routes } from '@/constants/routes'
 import { useCartStore } from '@/stores/cartStore'
 
-const links = [
-  ['Home', routes.home], ['Products', routes.products], ['Favorites', routes.favorites], ['Orders', routes.orders], ['Warehouse', routes.warehouse],
-] as const
+import "./Header.css";
 
-export function Header() {
-  const count = useCartStore((state) => state.items.reduce((sum, item) => sum + item.quantity, 0))
+function Header() {
   return (
-    <header className="site-header">
-      <Link className="brand" to={routes.home}>React Store<span>Foundation</span></Link>
-      <nav aria-label="Main navigation">
-        {links.map(([label, to]) => <NavLink key={to} to={to} end={to === routes.home} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>{label}</NavLink>)}
+    <header className="header">
+      <a href="/" className="logo">
+        <span className="crown">♛</span>
+        <span>ROLEX</span>
+      </a>
+
+      <nav className="nav-links">
+        <a href="/" className="active">Home</a>
+        <a href="#shop">Shop</a>
+        <a href="#about">Cart</a>
+        <a href="#contact">Contact</a>
       </nav>
-      <Link className="cart-link" to={routes.cart}>Cart <span aria-label={`${count} items in cart`}>{count}</span></Link>
+
+      <div className="header-icons">
+        <button aria-label="Search">⌕</button>
+        <button aria-label="Account">♙</button>
+        <button aria-label="Shopping cart" className="cart-button">
+          🛒
+          <span className="cart-count">0</span>
+        </button>
+      </div>
     </header>
-  )
+  );
 }
+
+export default Header;

@@ -1,14 +1,148 @@
-import { Link } from 'react-router-dom'
-import { routes } from '@/constants/routes'
+import "@/pages/Home/index.css";
+import heroImage from '@/assets/images/rolex-hero.jpg';
+import watch1 from '@/assets/images/watch-1.jpg';
+// import watch2 from "../assets/images/watch-2.jpg";
+import watch2 from '@/assets/images/watch-2.jpg';
+import watch3 from "@/assets/images/watch-3.jpg";
+import watch4 from "@/assets/images/watch-4.jpg";
+function Index() {
+  const products = [
+    {
+      id: 1,
+      name: "Submariner",
+      price: "14,800",
+      image: watch2,
+    },
+    {
+      id: 2,
+      name: "Datejust 41",
+      price: "12,500",
+      image: watch1,
+    },
+    {
+      id: 3,
+      name: "Oyster Perpetual",
+      price: "8,900",
+      image: watch3,
+    },
+    {
+      id: 4,
+      name: "Daytona",
+      price: "16,900",
+      image: watch4,
+    },
+  ];
 
-const areas = [
-  { name: 'Product catalog', tasks: 'S09–S16', path: routes.products, description: 'Catalog, search, filters and product details.' },
-  { name: 'Favorites', tasks: 'S14–S16', path: routes.favorites, description: 'Save and revisit favorite products.' },
-  { name: 'Cart and checkout', tasks: 'S17–S29', path: routes.cart, description: 'Branch-aware cart and a future demo order flow.' },
-  { name: 'Orders', tasks: 'S30–S32', path: routes.orders, description: 'Order history and saved order details.' },
-  { name: 'Warehouse', tasks: 'S33–S40', path: routes.warehouse, description: 'Warehouse stock, receipts and branch transfers.' },
-] as const
+  return (
+    <main>
+      <section className="hero">
+        <img
+          src={heroImage}
+          alt="Luxury watch"
+          className="hero-image"
+        />
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
+          <p className="hero-subtitle">TIMELESS ELEGANCE</p>
+          <h1>
+            ROLEX
+            <br />
+            <span>THE ART OF PRECISION</span>
+          </h1>
 
-export default function HomePage() {
-  return <div className="home-page"><section className="hero"><p className="eyebrow">Project foundation · Store A</p><h1>A clear starting point<br />for the React Store.</h1><p>This runnable shell establishes the client, route layout, shared API configuration and a small Express health service. The planned commerce features are still backlog.</p><div className="hero-actions"><Link className="button primary" to={routes.products}>Browse planned pages</Link><a className="button secondary" href="https://github.com/moner005/react-Store/blob/main/docs/project-analysis.md">Project plan</a></div></section><section className="section-heading"><div><p className="eyebrow">Work map</p><h2>Feature areas</h2></div><span className="status-pill">Structure only</span></section><div className="area-grid">{areas.map((area) => <Link className="area-card" key={area.name} to={area.path}><span className="card-task">{area.tasks}</span><h3>{area.name}</h3><p>{area.description}</p><span className="text-link">Open placeholder →</span></Link>)}</div><section className="api-status"><div><p className="eyebrow">API baseline</p><h2>Health endpoint only</h2><p>The server runs separately on port 5001. No fake API, database or store operations are included.</p></div><code>GET /health</code></section></div>
+          <p className="hero-description">
+            More than a watch. A legacy of excellence,
+            <br />
+            crafted for generations.
+          </p>
+
+          <a href="#shop" className="shop-button">
+            SHOP NOW <span>→</span>
+          </a>
+        </div>
+
+        {/* <div className="hero-dots">
+          <span className="dot active-dot"></span>
+          <span className="dot"></span>
+          <span className="dot"></span>
+          <span className="dot"></span>
+        </div> */}
+      </section>
+
+    
+      <section className="warehouses" id="warehouses">
+        <div className="section-label">
+          <span></span>
+          OUR WAREHOUSES
+          <span></span>
+        </div>
+
+        <h2>Choose Your Warehouse</h2>
+
+        <p className="warehouse-description">
+          Select the location you want to visit or receive your order from.
+        </p>
+
+        <div className="warehouse-buttons">
+          <button className="warehouse-button">
+            <span className="location-icon">♧</span>
+
+            <span className="warehouse-text">
+              <strong>Warehouse 1</strong>
+              <small>LATTAKIA</small>
+            </span>
+          </button>
+
+          <button className="warehouse-button">
+            <span className="location-icon">♧</span>
+
+            <span className="warehouse-text">
+              <strong>Warehouse 2</strong>
+              <small>DAMASCUS</small>
+            </span>
+          </button>
+        </div>
+      </section>
+
+    
+      <section className="featured-products" id="shop">
+        <div className="products-heading">
+          <h2>Featured Products</h2>
+
+          <div className="heading-line"></div>
+
+          <a href="#shop" className="view-all">
+            View All <span>→</span>
+          </a>
+        </div>
+
+        <div className="products-grid">
+          {products.map((product) => (
+            <article className="product-card" key={product.id}>
+              <img
+                src={product.image}
+                alt={product.name}
+                className="product-image"
+              />
+
+              <h3>{product.name}</h3>
+
+              <p className="product-price">
+                ${product.price}
+              </p>
+
+              <button
+                className="add-to-cart"
+                // onClick={() => alert(${product.name} added to cart!)}
+              >
+                <span>🛒</span> Add to Cart
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
 }
+
+export default Index;
