@@ -5,6 +5,8 @@ import watch1 from '@/assets/images/watch-1.jpg';
 import watch2 from '@/assets/images/watch-2.jpg';
 import watch3 from "@/assets/images/watch-3.jpg";
 import watch4 from "@/assets/images/watch-4.jpg";
+import { Link } from "react-router-dom";
+import { routes } from "@/constants/routes";
 function Index() {
   const products = [
     {
@@ -56,9 +58,9 @@ function Index() {
             crafted for generations.
           </p>
 
-          <a href="#shop" className="shop-button">
-            SHOP NOW <span>→</span>
-          </a>
+                  <Link to={routes.products}  className="shop-button">    SHOP NOW <span>→</span></Link>
+
+        
         </div>
 
         {/* <div className="hero-dots">
@@ -69,21 +71,21 @@ function Index() {
         </div> */}
       </section>
 
-    
+{/*     
       <section className="warehouses" id="warehouses">
         <div className="section-label">
           <span></span>
           OUR WAREHOUSES
           <span></span>
-        </div>
-
+        </div> */}
+{/* 
         <h2>Choose Your Warehouse</h2>
 
         <p className="warehouse-description">
           Select the location you want to visit or receive your order from.
-        </p>
+        </p> */}
 
-        <div className="warehouse-buttons">
+        {/* <div className="warehouse-buttons">
           <button className="warehouse-button">
             <span className="location-icon">♧</span>
 
@@ -101,8 +103,8 @@ function Index() {
               <small>DAMASCUS</small>
             </span>
           </button>
-        </div>
-      </section>
+        </div> */}
+      {/* </section> */}
 
     
       <section className="featured-products" id="shop">

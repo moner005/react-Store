@@ -7,16 +7,18 @@ import "./Header.css";
 function Header() {
   return (
     <header className="header">
-      <a href="/" className="logo">
+      <NavLink to={routes.home} className="logo">
         <span className="crown">♛</span>
         <span>ROLEX</span>
-      </a>
+      </NavLink>
 
       <nav className="nav-links">
-        <a href="/" className="active">Home</a>
-        <a href="#shop">Shop</a>
-        <a href="#about">Cart</a>
-        <a href="#contact">Contact</a>
+        <Link to={routes.home} className="active">
+          Home
+        </Link>
+        <Link to={routes.products}>Products</Link>
+        <Link to={routes.cart}>Cart</Link>
+        {/* <NavLink to={routes.contact}>Contact</NavLink> */}
       </nav>
 
       <div className="header-icons">
