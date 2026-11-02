@@ -3,7 +3,7 @@ import { routes } from '@/constants/routes'
 import { useCartStore } from '@/stores/cartStore'
 
 const links = [
-  ['Home', routes.home], ['Products', routes.products], ['Favorites', routes.favorites], ['Orders', routes.orders], ['Warehouse', routes.warehouse],
+  ['Home', routes.home], ['Products', routes.products], ['Check order', routes.checkOrder], ['Favorites', routes.favorites], ['Orders', routes.orders], ['Warehouse', routes.warehouse], ['Contact', routes.contact],
 ] as const
 
 export function Header() {

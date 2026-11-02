@@ -1,6 +1,15 @@
 # React Store
 
-Structural foundation for the React Store project. The current implementation includes the client shell, navigation, route placeholders, minimal cart state, API client configuration, and an Express health endpoint. The 40 frontend tasks and 12 later backend tasks in [the project plan](docs/project-analysis.md) remain backlog. There is no fake API, database, authentication, checkout, order flow, or inventory mutation yet.
+React Store course project with a client shell, order review, contact page, API client configuration, and an Express health endpoint. The [project plan](docs/project-analysis.md) distinguishes these frontend additions from the 40 frontend and 12 later backend tasks that remain backlog. There is no fake API, database, authentication, order submission, or inventory mutation yet.
+
+Main color scheme: [Rolex Store color palette](docs/rolex_store_color_palette.pdf).
+
+## Current pages
+
+- `/check-order` (also `/checkout`): review the shared in-memory cart, edit quantities/remove items, and calculate product subtotals in USD when price snapshots exist. Missing prices are shown as incomplete. Storage checks, tax, delivery, and order submission are pending; stock is never presented as confirmed.
+- `/contact`: validated name/email/subject/message form plus Rolex website, retailer locator, Instagram, Facebook, and X links. The recipient email will be added later. Preparing a message does not send it.
+
+The cart starts empty because catalog/add-to-cart integration is pending. It is not persisted across reloads. Other unfinished feature routes retain placeholder pages.
 
 ## Requirements
 
@@ -14,7 +23,7 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:5173. Client checks: `npm run lint`, `npm run typecheck`, `npm run build`. Copy `.env.example` to `.env` only when changing the API origin. The default API base is `http://localhost:5001`.
+Open http://localhost:5173. Client checks: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`. Copy `.env.example` to `.env` only when changing the API origin. The default API base is `http://localhost:5001`.
 
 ## Server
 

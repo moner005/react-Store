@@ -12,12 +12,13 @@ import WarehousePage from '@/pages/Warehouse'
 import BranchesPage from '@/pages/Branches'
 import TransfersPage from '@/pages/Transfers'
 import NotFoundPage from '@/pages/NotFound'
+import ContactPage from '@/pages/Contact'
 
 export const router = createBrowserRouter([{
   path: '/', element: <MainLayout />, children: [
     { index: true, element: <HomePage /> },
     { path: 'products', element: <ProductsPage /> }, { path: 'products/:id', element: <ProductDetailsPage /> },
-    { path: 'favorites', element: <FavoritesPage /> }, { path: 'cart', element: <CartPage /> }, { path: 'checkout', element: <CheckoutPage /> },
+    { path: 'favorites', element: <FavoritesPage /> }, { path: 'cart', element: <CartPage /> }, { path: 'checkout', element: <CheckoutPage /> }, { path: 'check-order', element: <CheckoutPage /> }, { path: 'contact', element: <ContactPage /> },
     { path: 'orders', element: <OrdersPage /> }, { path: 'orders/:id', element: <OrderDetailsPage /> },
     { path: 'management/warehouse', element: <WarehousePage /> }, { path: 'management/branches', element: <BranchesPage /> }, { path: 'management/branches/:branchId', element: <BranchesPage /> },
     { path: 'management/transfers', element: <TransfersPage /> }, { path: '*', element: <NotFoundPage /> },
