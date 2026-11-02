@@ -12,6 +12,9 @@ import WarehousePage from '@/pages/Warehouse'
 import BranchesPage from '@/pages/Branches'
 import TransfersPage from '@/pages/Transfers'
 import NotFoundPage from '@/pages/NotFound'
+import { AuthLayout } from '@/layouts/AuthLayout'
+import RegisterPage from '@/pages/Register'
+import LoginPage from '@/pages/Login'
 
 export const router = createBrowserRouter([{
   path: '/', element: <MainLayout />, children: [
@@ -21,5 +24,9 @@ export const router = createBrowserRouter([{
     { path: 'orders', element: <OrdersPage /> }, { path: 'orders/:id', element: <OrderDetailsPage /> },
     { path: 'management/warehouse', element: <WarehousePage /> }, { path: 'management/branches', element: <BranchesPage /> }, { path: 'management/branches/:branchId', element: <BranchesPage /> },
     { path: 'management/transfers', element: <TransfersPage /> }, { path: '*', element: <NotFoundPage /> },
-  ],
-}])
+  ]},
+  {element: <AuthLayout />, children: [
+    { path: 'register', element: <RegisterPage /> },
+    { path: 'login', element: <LoginPage /> }
+  ]}
+])
