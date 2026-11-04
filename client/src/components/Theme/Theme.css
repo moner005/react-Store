@@ -1,0 +1,17 @@
+.theme-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #c8a96b;
+  background-color: #006039;
+  color: #c8a96b;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: #c8a96b;
+  color: #111;
+  transform: rotate(20deg);
+}

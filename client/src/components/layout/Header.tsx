@@ -1,6 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { routes } from '@/constants/routes'
 import { useCartStore } from '@/stores/cartStore'
+import Theme from '@/components/Theme/Theme'
 
 import "./Header.css";
 
@@ -28,6 +29,7 @@ function Header() {
           🛒
           <span className="cart-count">0</span>
         </button>
+        <Theme />
       </div>
     </header>
   );

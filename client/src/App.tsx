@@ -10,10 +10,11 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Home from '@/pages/Home/index.tsx';
 import ProductDetails from "./pages/Products/ProductDetails";
+import { ThemeProvider } from "./context/ThemeContext";
 function App() {
   return (
     <>
-  
+  <ThemeProvider>
       <BrowserRouter>
       <Header />
       <Routes>
@@ -24,6 +25,7 @@ function App() {
 
       <Footer />
     </BrowserRouter>
+    </ThemeProvider>
     </>
   );
 }

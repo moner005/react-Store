@@ -1,17 +1,23 @@
 .footer {
-  background-color: #111111;
-  color: #ffffff;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+
   padding: 28px 7% 18px;
+
   display: grid;
   grid-template-columns: 1.2fr 1fr 1.2fr 1fr 1fr;
   gap: 20px;
+
   position: relative;
   box-sizing: border-box;
   font-size: 12px;
-}
 
+  border-top: 1px solid var(--border-color);
+
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 .footer-brand {
-  border-right: 1px solid #45413a;
+  border-right: 1px solid var(--border-color);
   padding-right: 20px;
 }
 
@@ -19,8 +25,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+
   width: fit-content;
-  color: #c8a96b;
+
+  color: var(--accent-color);
+
   text-decoration: none;
   font-family: Georgia, serif;
   font-size: 28px;
@@ -30,14 +39,14 @@
 }
 
 .footer-crown {
-  color: #c8a96b;
+  color: var(--accent-color);
   font-size: 32px;
   line-height: 1;
 }
 
 .footer-brand p {
   line-height: 1.7;
-  color: #dddddd;
+  color: var(--muted-color);
   margin: 0;
 }
 
@@ -48,20 +57,21 @@
 }
 
 .footer-column h3 {
-  color: #c8a96b;
+  color: var(--accent-color);
   font-size: 13px;
   font-weight: 500;
   margin: 0 0 5px;
 }
 
 .footer-column a {
-  color: #eeeeee;
+  color: var(--text-color);
   text-decoration: none;
-  transition: color 0.3s;
+
+  transition: color 0.3s ease;
 }
 
 .footer-column a:hover {
-  color: #c8a96b;
+  color: var(--accent-color);
 }
 
 .social-icons {
@@ -71,14 +81,20 @@
 }
 
 .social-icons a {
-  color: #c8a96b;
+  color: var(--accent-color);
   font-size: 23px;
   font-weight: bold;
+
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
+.social-icons a:hover {
+  transform: translateY(-3px);
+}
 .footer-motto {
-  border-left: 1px solid #45413a;
+  border-left: 1px solid var(--border-color);
   padding-left: 20px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,7 +103,7 @@
 }
 
 .footer-motto p {
-  color: #c8a96b;
+  color: var(--accent-color);
   font-family: Georgia, serif;
   font-style: italic;
   line-height: 1.6;
@@ -96,14 +112,15 @@
 
 .footer-bottom {
   grid-column: 1 / -1;
+
   text-align: center;
-  color: #aaaaaa;
+  color: var(--muted-color);
+
   font-size: 10px;
   padding-top: 12px;
-  border-top: 1px solid #292929;
-}
 
-/* Responsive */
+  border-top: 1px solid var(--border-color);
+}
 @media (max-width: 850px) {
   .footer {
     grid-template-columns: repeat(3, minmax(0, 1fr));

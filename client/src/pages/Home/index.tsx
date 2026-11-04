@@ -1,7 +1,6 @@
 import "@/pages/Home/index.css";
-import heroImage from '@/assets/images/rolex-hero.jpg';
+import heroVideo from "@/assets/videos/homevideo.mp4"
 import watch1 from '@/assets/images/watch-1.jpg';
-// import watch2 from "../assets/images/watch-2.jpg";
 import watch2 from '@/assets/images/watch-2.jpg';
 import watch3 from "@/assets/images/watch-3.jpg";
 import watch4 from "@/assets/images/watch-4.jpg";
@@ -37,13 +36,24 @@ function Index() {
 
   return (
     <main>
-      <section className="hero">
-        <img
-          src={heroImage}
-          alt="Luxury watch"
-          className="hero-image"
-        />
-        <div className="hero-overlay"></div>
+   <section className="hero">
+
+  {/* Background Video */}
+  <video
+    className="hero-video"
+    autoPlay
+    muted
+    loop
+    playsInline
+  >
+    <source
+      src={heroVideo}
+      type="video/mp4"
+    />
+  </video>
+
+  {/* Dark Overlay */}
+  <div className="hero-overlay"></div>
         <div className="hero-content">
           <p className="hero-subtitle">TIMELESS ELEGANCE</p>
           <h1>
@@ -113,9 +123,8 @@ function Index() {
 
           <div className="heading-line"></div>
 
-          <a href="#shop" className="view-all">
-            View All <span>→</span>
-          </a>
+       <Link to={routes.products}  className="view-all" > View All <span>→</span></Link>
+
         </div>
 
         <div className="products-grid">

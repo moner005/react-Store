@@ -1,10 +1,11 @@
 .details-page {
   min-height: 80vh;
   padding: 80px 7%;
-  background: #EAE4D8;
-  color: #1C1C1C;
+  background: var(--background-color);
+  color: var(--text-color);
   display: flex;
   align-items: center;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 .details-container {
@@ -16,15 +17,13 @@
   gap: 80px;
   align-items: center;
 }
-
-/* IMAGE */
-
 .details-image-section {
   animation: slideFromLeft 0.9s ease forwards;
 }
 
 .details-image-wrapper {
-  background: #F8F7F2;
+  background: var(--card-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 35px;
   overflow: hidden;
@@ -33,7 +32,7 @@
 
 .details-image-wrapper:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow);
 }
 
 .details-image {
@@ -47,20 +46,19 @@
   transform: scale(1.08);
 }
 
-/* INFORMATION */
-
 .details-info {
   animation: slideFromRight 0.9s ease forwards;
 }
 
 .details-label {
-  color: #006039;
+  color: var(--accent-color);
   letter-spacing: 4px;
   font-size: 13px;
   font-weight: 600;
 }
 
 .details-info h1 {
+  color: var(--text-color);
   font-size: 38px;
   margin: 20px 0;
   font-family: Georgia, serif;
@@ -70,12 +68,9 @@
 .details-line {
   width: 70px;
   height: 3px;
-  background: #C8A96B;
+  background: var(--accent-color);
   margin: 25px 0 35px;
 }
-
-/* WATCH INFORMATION */
-
 .watch-info {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -83,48 +78,74 @@
 }
 
 .watch-info div {
-  border-bottom: 1px solid #C8BFAF;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 15px;
 }
 
 .watch-info span {
-  color: #777;
+  color: var(--muted-color);
   font-size: 13px;
   letter-spacing: 1px;
 }
 
 .watch-info p {
+  color: var(--text-color);
   font-size: 16px;
   font-weight: 600;
   margin-top: 8px;
 }
 
 .details-description {
-  color: #666;
+  color: var(--muted-color);
   line-height: 1.8;
   margin: 30px 0;
 }
 
-/* BUTTON */
-
-.back-button {
-  display: inline-block;
-  padding: 14px 28px;
-  background: #006039;
-  color: white;
-  text-decoration: none;
-  border: 1px solid #006039;
-  transition: all 0.3s ease;
+.details-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+  align-items: flex-start;
 }
 
-.back-button:hover {
-  background: transparent;
-  color: #006039;
+.add-cart-button,
+.back-button {
+  width: 220px;
+  padding: 14px 28px;
+  text-align: center;
+  box-sizing: border-box;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.add-cart-button {
+  background: var(--primary-color);
+  color: var(--button-text);
+  border: 1px solid var(--primary-color);
+  font-weight: 600;
+}
+
+.add-cart-button:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #10251B;
   transform: translateY(-4px);
 }
 
-/* ANIMATIONS */
+.back-button {
+  display: inline-block;
+  background: transparent;
+  color: var(--primary-color);
+  text-decoration: none;
+  border: 1px solid var(--primary-color);
+}
 
+.back-button:hover {
+  background: var(--primary-color);
+  color: var(--button-text);
+  transform: translateY(-4px);
+}
 @keyframes slideFromLeft {
   from {
     opacity: 0;
@@ -153,62 +174,8 @@
   text-align: center;
   padding: 100px 20px;
   font-size: 20px;
+  color: var(--text-color);
 }
-
-
-.details-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-top: 30px;
-  align-items: flex-start;
-}
-
-/* ADD TO CART */
-
-.add-cart-button {
-  padding: 14px 28px;
-  background: #006039;
-  color: white;
-  border: 1px solid #006039;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.add-cart-button:hover {
-  background: #C8A96B;
-  border-color: #C8A96B;
-  color: #111;
-  transform: translateY(-4px);
-}
-
-/* BACK TO PRODUCTS */
-
-.back-button {
-  display: inline-block;
-  padding: 14px 28px;
-  background: transparent;
-  color: #006039;
-  text-decoration: none;
-  border: 1px solid #006039;
-  transition: all 0.3s ease;
-}
-
-.back-button:hover {
-  background: #006039;
-  color: white;
-  transform: translateY(-4px);
-}
-
-
-.add-cart-button,
-.back-button {
-  width: 220px;
-  text-align: center;
-  box-sizing: border-box;
-}
-/* RESPONSIVE */
 
 @media (max-width: 768px) {
   .details-container {
