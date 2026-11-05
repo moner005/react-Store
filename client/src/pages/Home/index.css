@@ -1,13 +1,9 @@
 
-main {
-  background-color: var(--background-color);
-}
-
-.hero,
-.featured-products {
+.home-content .hero,
+.home-content .featured-products {
   box-sizing: border-box;
 }
-.hero {
+.home-content .hero {
   position: relative;
   width: 100%;
   height: 650px;
@@ -17,7 +13,7 @@ main {
   align-items: center;
   background-color: #003d2a;
 }
-.hero-video {
+.home-content .hero-video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -26,7 +22,7 @@ main {
   object-position: center;
   z-index: 0;
 }
-.hero-overlay {
+.home-content .hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -37,7 +33,7 @@ main {
   );
   z-index: 1;
 }
-.hero-content {
+.home-content .hero-content {
   position: relative;
   z-index: 2;
   padding-left: 8%;
@@ -45,14 +41,14 @@ main {
   color: #ffffff;
 }
 
-.hero-subtitle {
+.home-content .hero-subtitle {
   color: #c8a96b;
   letter-spacing: 4px;
   font-size: 14px;
   margin: 0 0 10px;
 }
 
-.hero-content h1 {
+.home-content .hero-content h1 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 54px;
   line-height: 0.98;
@@ -60,18 +56,18 @@ main {
   color: #ffffff;
 }
 
-.hero-content h1 span {
+.home-content .hero-content h1 span {
   font-size: 29px;
   letter-spacing: 1px;
 }
 
-.hero-description {
+.home-content .hero-description {
   color: #ffffff;
   font-size: 14px;
   line-height: 1.6;
   margin: 0 0 16px;
 }
-.shop-button {
+.home-content .shop-button {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -86,15 +82,15 @@ main {
   transition: 0.3s ease;
 }
 
-.shop-button:hover {
+.home-content .shop-button:hover {
   background-color: #c8a96b;
   color: #111111;
 }
 
-.shop-button span {
+.home-content .shop-button span {
   font-size: 18px;
 }
-.hero-dots {
+.home-content .hero-dots {
   position: absolute;
   bottom: 18px;
   left: 50%;
@@ -104,25 +100,25 @@ main {
   z-index: 2;
 }
 
-.dot {
+.home-content .dot {
   width: 11px;
   height: 11px;
   border-radius: 50%;
   background-color: #777777;
 }
 
-.active-dot {
+.home-content .active-dot {
   background-color: #c8a96b;
 }
 
-.featured-products {
+.home-content .featured-products {
   width: 100%;
   padding: 8px 8% 18px;
   background-color: var(--background-color);
   transition: background-color 0.3s ease;
 }
 
-.products-heading {
+.home-content .products-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -130,7 +126,7 @@ main {
   margin-bottom: 16px;
 }
 
-.products-heading h2 {
+.home-content .products-heading h2 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 29px;
   font-weight: 600;
@@ -139,13 +135,13 @@ main {
   white-space: nowrap;
 }
 
-.heading-line {
+.home-content .heading-line {
   flex: 1;
   height: 1px;
   background-color: var(--accent-color);
 }
 
-.view-all {
+.home-content .view-all {
   color: var(--primary-color);
   text-decoration: none;
   white-space: nowrap;
@@ -153,22 +149,22 @@ main {
   transition: color 0.3s ease;
 }
 
-.view-all:hover {
+.home-content .view-all:hover {
   color: var(--accent-color);
 }
 
-.view-all span {
+.home-content .view-all span {
   margin-left: 8px;
   font-size: 19px;
 }
 
-.products-grid {
+.home-content .products-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 26px;
 }
 
-.product-card {
+.home-content .product-card {
   min-width: 0;
   box-sizing: border-box;
   padding: 10px 15px 12px;
@@ -187,12 +183,12 @@ main {
     border-color 0.3s ease;
 }
 
-.product-card:hover {
+.home-content .product-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow);
 }
 
-.product-image {
+.home-content .product-image {
   display: block;
   width: 100%;
   height: 112px;
@@ -200,19 +196,19 @@ main {
   margin: 0 auto 6px;
 }
 
-.product-card h3 {
+.home-content .product-card h3 {
   color: var(--text-color);
   font-size: 14px;
   font-weight: 500;
   margin: 4px 0;
 }
 
-.product-price {
+.home-content .product-price {
   color: var(--primary-color);
   font-size: 14px;
   margin: 5px 0 10px;
 }
-.add-to-cart {
+.home-content .add-to-cart {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -233,91 +229,91 @@ main {
   transition: all 0.3s ease;
 }
 
-.add-to-cart:hover {
+.home-content .add-to-cart:hover {
   background-color: var(--accent-color);
   color: #111111;
 }
 
 @media (max-width: 900px) {
 
-  .products-grid {
+  .home-content .products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
   }
 
-  .featured-products {
+  .home-content .featured-products {
     padding-left: 5%;
     padding-right: 5%;
   }
 
-  .hero-content h1 {
+  .home-content .hero-content h1 {
     font-size: 44px;
   }
 
-  .hero-content h1 span {
+  .home-content .hero-content h1 span {
     font-size: 24px;
   }
 }
 @media (max-width: 550px) {
 
-  .hero {
+  .home-content .hero {
     height: 500px;
     min-height: 500px;
   }
 
-  .hero-content {
+  .home-content .hero-content {
     padding-left: 6%;
     padding-right: 4%;
   }
 
-  .hero-content h1 {
+  .home-content .hero-content h1 {
     font-size: 38px;
   }
 
-  .hero-content h1 span {
+  .home-content .hero-content h1 span {
     font-size: 20px;
   }
 
-  .hero-description {
+  .home-content .hero-description {
     font-size: 13px;
   }
 
-  .featured-products {
+  .home-content .featured-products {
     padding: 15px 4% 20px;
   }
 
-  .products-heading {
+  .home-content .products-heading {
     gap: 10px;
     flex-wrap: wrap;
   }
 
-  .products-heading h2 {
+  .home-content .products-heading h2 {
     font-size: 24px;
   }
 
-  .heading-line {
+  .home-content .heading-line {
     display: none;
   }
 
-  .products-grid {
+  .home-content .products-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 
-  .product-card {
+  .home-content .product-card {
     padding: 8px;
   }
 
-  .product-image {
+  .home-content .product-image {
     height: 100px;
   }
 
-  .product-card h3,
-  .product-price {
+  .home-content .product-card h3,
+  .home-content .product-price {
     font-size: 13px;
   }
 
-  .add-to-cart {
+  .home-content .add-to-cart {
     padding: 9px 5px;
     font-size: 12px;
   }

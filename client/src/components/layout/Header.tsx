@@ -33,8 +33,7 @@ function Header() {
         ))}
       </nav>
       <div className="header-icons">
-        <button type="button" aria-label="Search">⌕</button>
-        <button type="button" aria-label="Account">♙</button>
+        <Link to={routes.login} className="account-button" aria-label="Login">♙</Link>
         <button type="button" aria-label={`Shopping cart, ${count ?? 'unavailable'} items`} className="cart-button" onClick={() => navigate(routes.cart)}>
           🛒<span className="cart-count">{count ?? '—'}</span>
         </button>

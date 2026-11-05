@@ -84,6 +84,15 @@
   transition: color 0.3s ease;
 }
 
+.header-icons .account-button {
+  color: #E2E0DB;
+  font-size: 25px;
+  line-height: 1;
+  padding: 4px;
+}
+
+.header-icons .account-button:hover { color: var(--accent-color); }
+
 .header-icons button:hover {
   color: var(--accent-color);
 }

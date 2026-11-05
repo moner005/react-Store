@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { MainLayout } from '@/layouts/MainLayout'
+import { AuthLayout } from '@/layouts/AuthLayout'
 import HomePage from '@/pages/Home'
 import ProductsPage from '@/pages/Products'
 import ProductDetailsPage from '@/pages/Products/ProductDetails'
@@ -8,6 +9,8 @@ import CartPage from '@/pages/Cart'
 import DashboardPage from '@/pages/Dashboard'
 import CheckoutPage from '@/pages/Checkout'
 import ContactPage from '@/pages/Contact'
+import LoginPage from '@/pages/Login'
+import RegisterPage from '@/pages/Register'
 import OrdersPage from '@/pages/Orders'
 import OrderDetailsPage from '@/pages/Orders/OrderDetails'
 import WarehousePage from '@/pages/Warehouse'
@@ -37,6 +40,13 @@ export const router = createBrowserRouter([
       { path: routes.branchDetails.slice(1), element: <BranchesPage /> },
       { path: routes.transfers.slice(1), element: <TransfersPage /> },
       { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+  {
+    element: <AuthLayout />,
+    children: [
+      { path: routes.login.slice(1), element: <LoginPage /> },
+      { path: routes.register.slice(1), element: <RegisterPage /> },
     ],
   },
 ])

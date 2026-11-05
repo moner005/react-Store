@@ -139,14 +139,15 @@ function Index() {
               <button
                 className="add-to-cart"
                 onClick={() => {
-                  addItem({
+                  const accepted = addItem({
                     id: product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
                     name: product.name,
                     price: Number(product.price.replace(/,/g, "")),
                     image: product.image,
                   });
 
-                  toast.success(`${product.name} added successfully!`);
+                  if (accepted) toast.success(`${product.name} added successfully!`);
+                  else toast.error("This item could not be added to the cart.");
                 }}
               >
                 <span>🛒</span> Add to Cart

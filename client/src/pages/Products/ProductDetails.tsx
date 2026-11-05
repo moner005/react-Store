@@ -18,7 +18,7 @@ function ProductDetails() {
   function handleAddToCart() {
     if (!watch) return;
 
-    addItem({
+    const accepted = addItem({
       id: watch.slug,
       name: watch.name,
       price: null,
@@ -26,6 +26,7 @@ function ProductDetails() {
       referenceNumber: watch.referenceNumber,
     });
 
+    if (!accepted) return;
     setAdded(true);
 
     setTimeout(() => {

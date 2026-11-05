@@ -4,7 +4,7 @@ import type { CartItem, CartProduct, CartState } from '@/types/cart'
 import { dollarsToMinor } from '../utils/money.ts'
 
 interface CartStore extends CartState {
-  addItem: (product: CartProduct) => void
+  addItem: (product: CartProduct) => boolean
   removeItem: (productId: string) => void
   updateQuantity: (productId: string, quantity: number) => void
   clear: () => void
@@ -19,9 +19,13 @@ function isValidProduct(value: unknown): value is CartProduct {
   return typeof value.id === 'string'
     && value.id.length > 0
     && typeof value.name === 'string'
-    && (value.price === null || (typeof value.price === 'number' && dollarsToMinor(value.price) !== null))
+    && (value.price === null || (typeof value.price === 'number' && Number.isFinite(value.price)))
     && (value.image === undefined || typeof value.image === 'string')
     && (value.referenceNumber === undefined || typeof value.referenceNumber === 'string')
+}
+
+function isSupportedProduct(product: CartProduct): boolean {
+  return product.price === null || dollarsToMinor(product.price) !== null
 }
 
 function isValidCartItem(value: unknown): value is CartItem {
@@ -42,17 +46,23 @@ export const useCartStore = create<CartStore>()(
       items: [],
       selectedBranchId: null,
       addItem: (product) => {
-        if (!isValidProduct(product)) return
+        if (!isValidProduct(product) || !isSupportedProduct(product)) return false
+        let accepted = false
         set((state) => {
           const existing = state.items.find((item) => item.productId === product.id)
-          if (!existing) return { items: [...state.items, { productId: product.id, quantity: 1, product }] }
+          if (!existing) {
+            accepted = true
+            return { items: [...state.items, { productId: product.id, quantity: 1, product }] }
+          }
           if (!Number.isSafeInteger(existing.quantity + 1)) return state
+          accepted = true
           return {
             items: state.items.map((item) => item.productId === product.id
               ? { ...item, quantity: item.quantity + 1, product }
               : item),
           }
         })
+        return accepted
       },
       removeItem: (productId) => set((state) => ({ items: removeItems(state.items, productId) })),
       updateQuantity: (productId, quantity) => {
@@ -71,7 +81,17 @@ export const useCartStore = create<CartStore>()(
         const saved = isRecord(persistedState) ? persistedState : {}
         return {
           ...currentState,
-          items: Array.isArray(saved.items) ? saved.items.filter(isValidCartItem) : [],
+          items: Array.isArray(saved.items)
+            ? saved.items.filter(isValidCartItem).map((item) => ({
+              ...item,
+              product: {
+                ...item.product,
+                price: item.product.price !== null && dollarsToMinor(item.product.price) === null
+                  ? null
+                  : item.product.price,
+              },
+            }))
+            : [],
           selectedBranchId: typeof saved.selectedBranchId === 'string' ? saved.selectedBranchId : null,
         }
       },

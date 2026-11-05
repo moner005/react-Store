@@ -33,7 +33,7 @@ function Products() {
 
   return (
     <>
-    <section className="products-page">
+    <section className="catalog-page">
       <section className="products-intro">
         <span>TIMELESS ELEGANCE</span>
         <h1>Our Collection</h1>

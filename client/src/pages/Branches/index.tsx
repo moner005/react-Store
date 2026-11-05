@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "./Branches.css";
-import { useNavigate } from "react-router-dom";
 
 type City = "Damascus" | "Latakia";
 
@@ -89,8 +88,7 @@ const products: Product[] = [
 ];
 
 function Branches() {
-  const [selectedCity, setSelectedCity] = useState("All");
-  const navigate = useNavigate();
+  const [selectedCity, setSelectedCity] = useState<"All" | City>("All");
 
   const filteredProducts =
     selectedCity === "All"
@@ -98,7 +96,7 @@ function Branches() {
       : products.filter((product) => product.city === selectedCity);
 
   return (
-    <section className="products-page" dir="ltr">
+    <section className="branches-page" dir="ltr">
       <section className="products-banner">
         <p className="products-subtitle">DISCOVER OUR COLLECTION</p>
 
@@ -108,6 +106,7 @@ function Branches() {
           Discover our exclusive collection of luxury watches,
           carefully selected to match your style.
         </p>
+        <p className="branch-demo-note">Demonstration listings only. Sample prices are shown in SYP; availability has not been checked.</p>
       </section>
 
       <section className="products-section">
@@ -124,9 +123,11 @@ function Branches() {
         <div className="products-filters">
           <span>Filter by branch:</span>
 
-          {["All", "Damascus", "Latakia"].map((city) => (
+          {(["All", "Damascus", "Latakia"] as const).map((city) => (
             <button
               key={city}
+              type="button"
+              aria-pressed={selectedCity === city}
               className={`filter-button ${
                 selectedCity === city ? "active" : ""
               }`}
@@ -163,14 +164,7 @@ function Branches() {
                 {product.price.toLocaleString("en-US")} SYP
               </p>
 
-              <button
-                className="add-to-cart"
-                onClick={() =>
-                  navigate(`/products/${product.id}`)
-                }
-              >
-                View Product
-              </button>
+              <span className="branch-demo-label">Demo listing</span>
             </article>
           ))}
         </div>

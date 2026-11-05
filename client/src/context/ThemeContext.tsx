@@ -7,18 +7,26 @@ import { ThemeContext } from "@/context/themeContextValue";
 
 type Theme = "light" | "dark";
 
+function readSavedTheme(): Theme {
+  try {
+    return localStorage.getItem("theme") === "dark" ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
 
-  const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem("theme");
-
-    return savedTheme === "dark" ? "dark" : "light";
-  });
+  const [theme, setTheme] = useState<Theme>(readSavedTheme);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
 
-    localStorage.setItem("theme", theme);
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {
+      // The visual theme still applies when browser storage is unavailable.
+    }
   }, [theme]);
 
   const toggleTheme = () => {

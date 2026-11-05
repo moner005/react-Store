@@ -14,4 +14,6 @@ export const routes = {
   branches: '/management/branches',
   branchDetails: '/management/branches/:branchId',
   transfers: '/management/transfers',
+  login: '/login',
+  register: '/register',
 } as const

@@ -19,6 +19,7 @@ storage.setItem('rolex-store-cart', JSON.stringify({ state: {
     savedValidItem,
     { productId: 'unsafe', quantity: Number.MAX_SAFE_INTEGER + 1, product: { id: 'unsafe', name: 'Unsafe', price: 2 } },
     { productId: 'fractional', quantity: 1, product: { id: 'fractional', name: 'Fractional', price: 1.239 } },
+    { productId: 'negative', quantity: 1, product: { id: 'negative', name: 'Negative', price: -1 } },
     { productId: 'broken', quantity: 1, product: { id: 'other', name: 'Broken', price: 1 } },
   ],
   selectedBranchId: 'branch-north',
@@ -29,8 +30,12 @@ function item(productId: string, price: number | null, quantity = 1): CartItem {
   return { productId, quantity, product: { id: productId, name: productId, price } }
 }
 
-test('hydrates existing valid cart data and rejects malformed or unsafe lines', () => {
-  assert.deepEqual(useCartStore.getState().items, [savedValidItem])
+test('hydrates valid cart lines, normalizes unsupported legacy prices, and rejects unsafe entries', () => {
+  assert.deepEqual(useCartStore.getState().items, [
+    savedValidItem,
+    { productId: 'fractional', quantity: 1, product: { id: 'fractional', name: 'Fractional', price: null } },
+    { productId: 'negative', quantity: 1, product: { id: 'negative', name: 'Negative', price: null } },
+  ])
   assert.equal(useCartStore.getState().selectedBranchId, 'branch-north')
 })
 
@@ -75,10 +80,11 @@ test('quantity actions reject invalid values and update only the requested line'
   assert.equal(useCartStore.getState().selectedBranchId, 'branch-south')
 })
 
-test('addItem prevents quantity overflow and remove/clear retain the branch', () => {
+test('addItem reports rejected overflow and remove/clear retain the branch', () => {
   useCartStore.setState({ items: [item('max', null, Number.MAX_SAFE_INTEGER), item('remove-me', 1)], selectedBranchId: 'branch-west' })
-  useCartStore.getState().addItem({ id: 'max', name: 'max', price: null })
+  assert.equal(useCartStore.getState().addItem({ id: 'max', name: 'max', price: null }), false)
   assert.equal(useCartStore.getState().items[0].quantity, Number.MAX_SAFE_INTEGER)
+  assert.equal(useCartStore.getState().addItem({ id: 'unsupported', name: 'unsupported', price: 1.239 }), false)
   useCartStore.getState().removeItem('remove-me')
   assert.deepEqual(useCartStore.getState().items.map((line) => line.productId), ['max'])
   assert.equal(useCartStore.getState().selectedBranchId, 'branch-west')
