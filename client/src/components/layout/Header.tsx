@@ -1,48 +1,47 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { routes } from "@/constants/routes";
-import { useCartStore } from "@/stores/cartStore";
-import Theme from "@/components/Theme/Theme";
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { routes } from '@/constants/routes'
+import { useCartStore } from '@/stores/cartStore'
+import { countCartItems } from '@/utils/totals'
+import Theme from '@/components/Theme/Theme'
+import './Header.css'
 
-import "./Header.css";
+const links = [
+  ['Home', routes.home],
+  ['Products', routes.products],
+  ['Cart', routes.cart],
+  ['Dashboard', routes.dashboard],
+  ['Branches', routes.branches],
+  ['Check order', routes.checkOrder],
+  ['Contact', routes.contact],
+] as const
 
 function Header() {
-  const navigate = useNavigate();
-  const count = useCartStore((state) =>
-    state.items.reduce((sum, item) => sum + item.quantity, 0),
-  );
+  const navigate = useNavigate()
+  const count = useCartStore((state) => countCartItems(state.items))
 
   return (
     <header className="header">
-      <NavLink to={routes.home} className="logo">
-        <span className="crown">♛</span>
+      <Link to={routes.home} className="logo" aria-label="Rolex Store home">
+        <span className="crown" aria-hidden="true">♛</span>
         <span>ROLEX</span>
-      </NavLink>
-
-      <nav className="nav-links">
-        <Link to={routes.home} className="active">
-          Home
-        </Link>
-        <Link to={routes.products}>Products</Link>
-        <Link to={routes.cart}>Cart</Link>
-        <Link to={routes.branches}>Branches</Link>
-        {/* <NavLink to={routes.contact}>Contact</NavLink> */}
+      </Link>
+      <nav className="nav-links" aria-label="Main navigation">
+        {links.map(([label, path]) => (
+          <NavLink key={path} to={path} end={path === routes.home}>
+            {label}
+          </NavLink>
+        ))}
       </nav>
-
       <div className="header-icons">
-        <button aria-label="Search">⌕</button>
-        <button aria-label="Account">♙</button>
-        <button
-          aria-label="Shopping cart"
-          className="cart-button"
-          onClick={() => navigate(routes.cart)}
-        >
-          🛒
-          <span className="cart-count">{count}</span>
+        <button type="button" aria-label="Search">⌕</button>
+        <button type="button" aria-label="Account">♙</button>
+        <button type="button" aria-label={`Shopping cart, ${count ?? 'unavailable'} items`} className="cart-button" onClick={() => navigate(routes.cart)}>
+          🛒<span className="cart-count">{count ?? '—'}</span>
         </button>
         <Theme />
       </div>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

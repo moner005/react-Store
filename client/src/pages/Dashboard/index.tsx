@@ -2,36 +2,16 @@
 import { Link } from 'react-router-dom'
 import { routes } from '@/constants/routes'
 import { useCartStore } from '@/stores/cartStore'
+import { dollarsToMinor, formatUsd } from '@/utils/money'
+import { countCartItems, lineTotalMinor, productSubtotal } from '@/utils/totals'
 import './Dashboard.css'
-
-const currency = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 0,
-})
 
 function DashboardPage() {
   const items = useCartStore((state) => state.items)
 
-  const totalUnits = items.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  )
-
-  const totalValue = items.reduce(
-    (sum, item) => {
-      if (item.product.price === null) {
-        return sum
-      }
-
-      return sum + item.product.price * item.quantity
-    },
-    0
-  )
-
-  const unpricedItems = items.filter(
-    (item) => item.product.price === null
-  )
+  const totalUnits = countCartItems(items)
+  const totalValue = productSubtotal(items)
+  const unpricedItems = items.filter((item) => lineTotalMinor(item) === null)
 
   const mostSelected = [...items].sort(
     (a, b) => b.quantity - a.quantity
@@ -39,7 +19,7 @@ function DashboardPage() {
 
   const productShares = items.map((item) => ({
     ...item,
-    share: totalUnits > 0
+    share: totalUnits !== null && totalUnits > 0
       ? (item.quantity / totalUnits) * 100
       : 0,
   }))
@@ -53,14 +33,14 @@ function DashboardPage() {
     },
     {
       label: 'Total Units',
-      value: totalUnits,
+      value: totalUnits ?? 'Unavailable',
       description: 'Total selected quantities',
       icon: '◈',
     },
     {
       label: 'Cart Value',
-      value: currency.format(totalValue),
-      description: 'Known product prices',
+      value: totalValue === null ? 'Unavailable' : formatUsd(totalValue),
+      description: 'Product subtotal',
       icon: '$',
     },
     {
@@ -72,7 +52,7 @@ function DashboardPage() {
   ]
 
   return (
-    <main className="dashboard-page">
+    <section className="dashboard-page">
 
       <header className="dashboard-header">
 
@@ -143,7 +123,7 @@ function DashboardPage() {
             </div>
 
             <span className="dashboard-total">
-              {totalUnits} Units
+              {totalUnits ?? 'Unavailable'} Units
             </span>
 
           </div>
@@ -241,7 +221,7 @@ function DashboardPage() {
 
             <span>Known Cart Value</span>
 
-            <strong>{currency.format(totalValue)}</strong>
+            <strong>{totalValue === null ? 'Unavailable' : formatUsd(totalValue)}</strong>
 
           </div>
 
@@ -305,8 +285,10 @@ function DashboardPage() {
 
               <tbody>
 
-                {items.map((item) => (
-
+                {items.map((item) => {
+                  const unitPrice = dollarsToMinor(item.product.price ?? Number.NaN)
+                  const lineTotal = lineTotalMinor(item)
+                  return (
                   <tr key={item.productId}>
 
                     <td>{item.product.name}</td>
@@ -318,22 +300,21 @@ function DashboardPage() {
                     <td>{item.quantity}</td>
 
                     <td>
-                      {item.product.price === null
+                      {unitPrice === null
                         ? 'Unavailable'
-                        : currency.format(item.product.price)}
+                        : formatUsd(unitPrice)}
                     </td>
 
                     <td>
-                      {item.product.price === null
+                      {lineTotal === null
                         ? 'Unavailable'
-                        : currency.format(
-                            item.product.price * item.quantity
-                          )}
+                        : formatUsd(lineTotal)}
                     </td>
 
                   </tr>
 
-                ))}
+                  )
+                })}
 
               </tbody>
 
@@ -345,7 +326,7 @@ function DashboardPage() {
 
       </section>
 
-    </main>
+    </section>
   )
 }
 

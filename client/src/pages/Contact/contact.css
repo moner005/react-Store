@@ -1,0 +1,26 @@
+.contact-page { max-width: 1000px; margin: 0 auto; padding: 3rem clamp(1rem, 5vw, 3rem); }
+.contact-heading { padding: 1rem 0 2rem; border-bottom: 1px solid var(--accent-color); }
+.contact-heading h1 { font: 400 clamp(3rem, 7vw, 5rem)/1 Georgia, 'Times New Roman', serif; letter-spacing: -.04em; color: var(--text-color); margin-bottom: 1rem; }
+.contact-heading > p:last-child { color: var(--muted-color); line-height: 1.6; }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(250px, .8fr); gap: 2rem; padding-top: 2rem; }
+.contact-form-panel h2, .official-panel h2 { font: 1.55rem Georgia, serif; margin: 0 0 1rem; }
+.contact-coming { background: var(--surface-color); border-left: 3px solid var(--accent-color); padding: .9rem 1rem; margin-bottom: 1.4rem; display: grid; gap: .3rem; color: var(--muted-color); font-size: .9rem; }
+.contact-coming strong { color: var(--text-color); }
+.contact-field { display: grid; gap: .45rem; margin-bottom: 1rem; font-weight: 600; font-size: .87rem; }
+.contact-field input, .contact-field textarea { width: 100%; padding: .75rem; border: 1px solid var(--border-color); border-radius: 2px; background: var(--surface-color); font: inherit; font-weight: 400; color: var(--text-color); }
+.contact-field textarea { resize: vertical; }
+.contact-field [aria-invalid=true] { border-color: #a63232; }
+.field-error { color: #a63232; font-size: .8rem; font-weight: 400; }
+.contact-submit { padding: .8rem 1.1rem; border: 0; background: var(--primary-color); color: #fff; font: inherit; font-weight: 650; cursor: pointer; }
+.contact-result { padding: .8rem 1rem; background: var(--surface-color); color: var(--muted-color); line-height: 1.5; }
+.official-panel { align-self: start; background: var(--surface-color); padding: 1.5rem; border: 1px solid var(--border-color); border-top: 2px solid var(--accent-color); }
+.official-panel > p:not(.eyebrow) { color: var(--muted-color); line-height: 1.6; }
+.official-link { display: block; padding: .9rem 0; border-top: 1px solid var(--border-color); color: var(--primary-color); font-weight: 650; }
+.contact-socials { display: flex; gap: .7rem; margin: 1.3rem 0; }
+.contact-socials a { width: 2.6rem; height: 2.6rem; border: 1px solid var(--border-color); border-radius: 50%; display: grid; place-items: center; color: var(--primary-color); }
+.contact-socials svg { width: 1.1rem; height: 1.1rem; }
+.official-panel small { color: var(--muted-color); line-height: 1.5; display: block; }
+
+@media (max-width: 700px) {
+  .contact-grid { grid-template-columns: 1fr; gap: 1.4rem; }
+}

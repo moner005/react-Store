@@ -65,7 +65,7 @@ function ProductDetails() {
   }
 
   return (
-    <main className="details-page">
+    <section className="details-page">
       <div className="details-container">
         <div className="details-image-section">
           <div className="details-image-wrapper">
@@ -121,7 +121,7 @@ function ProductDetails() {
           </div>
         </div>
       </div>
-    </main>
+    </section>
   );
 }
 

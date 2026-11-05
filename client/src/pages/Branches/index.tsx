@@ -98,7 +98,7 @@ function Branches() {
       : products.filter((product) => product.city === selectedCity);
 
   return (
-    <main className="products-page" dir="ltr">
+    <section className="products-page" dir="ltr">
       <section className="products-banner">
         <p className="products-subtitle">DISCOVER OUR COLLECTION</p>
 
@@ -181,7 +181,7 @@ function Branches() {
           </p>
         )}
       </section>
-    </main>
+    </section>
   );
 }
 

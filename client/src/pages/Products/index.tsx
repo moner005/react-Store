@@ -33,7 +33,7 @@ function Products() {
 
   return (
     <>
-    <main className="products-page">
+    <section className="products-page">
       <section className="products-intro">
         <span>TIMELESS ELEGANCE</span>
         <h1>Our Collection</h1>
@@ -81,7 +81,7 @@ function Products() {
           Dials
         </a>
       </p>
-    </main>
+    </section>
 
     </>
   );

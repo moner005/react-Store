@@ -1,13 +1,17 @@
-
 export const routes = {
   home: '/',
   products: '/products',
+  productDetails: '/products/:slug',
   favorites: '/favorites',
   cart: '/cart',
-  checkout: '/checkout',
   dashboard: '/dashboard',
+  checkout: '/checkout',
+  checkOrder: '/check-order',
+  contact: '/contact',
   orders: '/orders',
+  orderDetails: '/orders/:id',
   warehouse: '/management/warehouse',
   branches: '/management/branches',
+  branchDetails: '/management/branches/:branchId',
   transfers: '/management/transfers',
 } as const

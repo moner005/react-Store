@@ -1,57 +1,40 @@
-import "./Footer.css";
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { routes } from '@/constants/routes'
-import { useCartStore } from '@/stores/cartStore'
+import './Footer.css'
 
 function Footer() {
   return (
-    <footer className="footer" id="contact">
+    <footer className="footer">
       <div className="footer-brand">
-        <a href="/" className="footer-logo">
-          <span className="footer-crown">♛</span>
+        <Link to={routes.home} className="footer-logo" aria-label="Rolex Store home">
+          <span className="footer-crown" aria-hidden="true">♛</span>
           <span>ROLEX</span>
-        </a>
-
-        <p>A symbol of excellence<br />since 1905.</p>
+        </Link>
+        <p>A course learning project inspired by the Rolex visual identity.</p>
       </div>
-
-      <div className="footer-column">
-        <h3>Quick Links</h3>
-        <a href="/">Home</a>
-        <a href="#shop">Shop</a>
-        <a href="#about">Cart</a>
-        <a href="#contact">Contact</a>
-      </div>
-
-      <div className="footer-column">
-        <h3>Customer Service</h3>
-        <a href="#shipping">Shipping &amp; Returns</a>
-        <a href="#faqs">FAQs</a>
-        <a href="#terms">Terms &amp; Conditions</a>
-        <a href="#privacy">Privacy Policy</a>
-      </div>
-
+      <nav className="footer-column" aria-label="Store links">
+        <h2>Explore</h2>
+        <Link to={routes.home}>Home</Link>
+        <Link to={routes.products}>Products</Link>
+        <Link to={routes.cart}>Cart</Link>
+        <Link to={routes.dashboard}>Dashboard</Link>
+      </nav>
+      <nav className="footer-column" aria-label="Project links">
+        <h2>Project</h2>
+        <Link to={routes.branches}>Branches</Link>
+        <Link to={routes.checkOrder}>Check order</Link>
+        <Link to={routes.contact}>Contact</Link>
+      </nav>
       <div className="footer-column footer-social">
-        <h3>Follow Us</h3>
-
-        <div className="social-icons">
-          <a href="#instagram" aria-label="Instagram">◎</a>
-          <a href="#facebook" aria-label="Facebook">f</a>
-          <a href="#youtube" aria-label="YouTube">▶</a>
-          <a href="#x" aria-label="X">𝕏</a>
-        </div>
+        <h2>Official Rolex channels</h2>
+        <a href="https://www.instagram.com/rolex/" target="_blank" rel="noreferrer">Instagram ↗</a>
+        <a href="https://www.facebook.com/rolex/" target="_blank" rel="noreferrer">Facebook ↗</a>
+        <a href="https://x.com/ROLEX" target="_blank" rel="noreferrer">X ↗</a>
+        <a href="https://www.rolex.com/" target="_blank" rel="noreferrer">Official website ↗</a>
       </div>
-
-      <div className="footer-motto">
-        <span className="footer-crown">♛</span>
-        <p>The best investment<br />is time.</p>
-      </div>
-
-      <div className="footer-bottom">
-        © 2026 Rolex Store. All rights reserved.
-      </div>
+      <div className="footer-bottom">React Store · Course project</div>
     </footer>
-  );
+  )
 }
 
-export default Footer;
+export default Footer

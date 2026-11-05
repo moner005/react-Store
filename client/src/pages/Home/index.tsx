@@ -39,7 +39,7 @@ function Index() {
   ];
 
   return (
-    <main>
+    <div className="home-content">
       <section className="hero">
         {/* Background Video */}
         <video className="hero-video" autoPlay muted loop playsInline>
@@ -155,7 +155,7 @@ function Index() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

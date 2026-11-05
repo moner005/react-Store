@@ -2,19 +2,9 @@
 import { Link } from 'react-router-dom'
 import { routes } from '@/constants/routes'
 import { useCartStore } from '@/stores/cartStore'
+import { formatUsd, dollarsToMinor } from '@/utils/money'
+import { countCartItems, lineTotalMinor, productSubtotal } from '@/utils/totals'
 import './Cart.css'
-
-const currency = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 0,
-})
-
-function formatPrice(price: number | null) {
-  return price === null
-    ? 'Price unavailable'
-    : currency.format(price)
-}
 
 export default function CartPage() {
   const items = useCartStore((state) => state.items)
@@ -26,28 +16,12 @@ export default function CartPage() {
   )
   const clear = useCartStore((state) => state.clear)
 
-  const totalQuantity = items.reduce(
-    (total, item) => total + item.quantity,
-    0
-  )
-
-  const subtotal = items.reduce(
-    (total, item) => {
-      if (item.product.price === null) {
-        return total
-      }
-
-      return total + item.product.price * item.quantity
-    },
-    0
-  )
-
-  const hasUnpricedItems = items.some(
-    (item) => item.product.price === null
-  )
+  const totalQuantity = countCartItems(items)
+  const subtotal = productSubtotal(items)
+  const hasUnpricedItems = items.some((item) => dollarsToMinor(item.product.price ?? Number.NaN) === null)
 
   return (
-    <main className="cart-page">
+    <section className="cart-page">
 
       <header className="cart-header">
         <div className="cart-eyebrow">
@@ -91,15 +65,12 @@ export default function CartPage() {
 
             <div className="cart-panel-heading">
               <h2>Selected Watches</h2>
-              <span>{totalQuantity} Items</span>
+              <span>{totalQuantity ?? 'Unavailable'} Items</span>
             </div>
 
             {items.map((item) => {
 
-              const lineTotal =
-                item.product.price === null
-                  ? null
-                  : item.product.price * item.quantity
+              const lineTotal = lineTotalMinor(item)
 
               return (
                 <article
@@ -133,7 +104,9 @@ export default function CartPage() {
                     )}
 
                     <p className="cart-unit-price">
-                      {formatPrice(item.product.price)}
+                      {item.product.price === null || dollarsToMinor(item.product.price) === null
+                        ? 'Price unavailable'
+                        : formatUsd(dollarsToMinor(item.product.price)!)}
                     </p>
 
                     <div className="cart-quantity">
@@ -163,6 +136,7 @@ export default function CartPage() {
                             item.quantity + 1
                           )
                         }
+                        disabled={item.quantity >= Number.MAX_SAFE_INTEGER}
                       >
                         +
                       </button>
@@ -174,7 +148,7 @@ export default function CartPage() {
                   <div className="cart-item-actions">
 
                     <strong className="cart-line-total">
-                      {formatPrice(lineTotal)}
+                      {lineTotal === null ? 'Price unavailable' : formatUsd(lineTotal)}
                     </strong>
 
                     <button
@@ -224,7 +198,7 @@ export default function CartPage() {
 
             <div className="summary-row">
               <span>Total Items</span>
-              <strong>{totalQuantity}</strong>
+              <strong>{totalQuantity ?? 'Unavailable'}</strong>
             </div>
 
             <div className="summary-row">
@@ -234,20 +208,20 @@ export default function CartPage() {
 
             <div className="summary-row">
               <span>Subtotal</span>
-              <strong>{currency.format(subtotal)}</strong>
+              <strong>{subtotal === null ? 'Unavailable' : formatUsd(subtotal)}</strong>
             </div>
 
             <div className="summary-divider" />
 
             <div className="summary-total">
               <span>Known Price Total</span>
-              <strong>{currency.format(subtotal)}</strong>
+              <strong>{subtotal === null ? 'Unavailable' : formatUsd(subtotal)}</strong>
             </div>
 
             {hasUnpricedItems && (
               <div className="cart-notice">
-                Some watches do not have a price in the
-                catalogue. They are excluded from this subtotal.
+                Some watches have a missing or unsupported catalogue price.
+                The product subtotal is unavailable until all line prices are known.
               </div>
             )}
 
@@ -271,6 +245,9 @@ export default function CartPage() {
               >
                 View Dashboard
               </Link>
+              <Link to={routes.checkOrder} className="cart-secondary-button">
+                Check your order
+              </Link>
 
             </div>
 
@@ -288,6 +265,6 @@ export default function CartPage() {
         </Link>
       </div>
 
-    </main>
+    </section>
   )
 }

@@ -1,16 +1,30 @@
-# Scaffold implementation status — 29 October 2026
+# Backup integration — 6 November 2026
 
-This repository currently contains the structural foundation only: a runnable React client scaffold and an Express health endpoint. The planned backlog (40 frontend tasks and 12 later backend tasks) remains open; feature routes are clearly labeled as not implemented. No catalog, authentication, checkout, orders, inventory mutations, fake API, or database behavior is implemented. The runnable baseline is Vite on port 5173 and the Express API on port 5001. The proposed json-server/db.json API on port 5000 is pending.
+Review branch `backup` starts at `main` (`593a1f6`) and combines `lamis` (`588323e`, included through Hala), `cart_dashboard/hala` (`467a2e9`), `ibrahim` (`e09583f`), `moner` (`c9ed72c`), and `feature/auth-pages` (`0795b6a`). Approval of the combined branch is required before updating `main`.
+
+The integrated client uses one router and cart store. It includes the themed storefront, Dials catalog and details, persistent cart, cart dashboard, order review, sample branch listings, contact form preview, and login/register previews. Cart totals are calculated in USD cents when all line prices are available. The branch sample data stays separate from the catalog and cart. Stock, final checkout, authentication, email delivery, and backend order/inventory behavior remain pending.
+
+# Historical implementation status — 2 November 2026
+
+The structural foundation provides a runnable React client and an Express health endpoint. Current frontend work adds an order-review page at `/check-order` (also available at `/checkout`) and a contact page at `/contact`. The review reads the shared in-memory cart, supports quantity/removal controls, and derives USD product totals from optional cart display snapshots. Missing or invalid prices leave totals incomplete. Stock is explicitly not checked because storage is not implemented. Tax, delivery, final checkout, and order submission remain pending.
+
+The contact page validates a local message form and links to Rolex's external website, retailer locator, and social accounts. The user will supply the recipient email later; no message is sent or stored by a server. The black/green/gold palette is applied to the shared shell and these pages. The 40 frontend and 12 later backend task rows remain backlog; these pages only partially support relevant cart/totals work. Catalog integration, cart persistence, branch switching, stock checks, authentication, orders, inventory mutations, fake API, and database behavior are not implemented. Vite uses port 5173 and Express uses 5001; the proposed json-server API on 5000 is pending.
 
 Local validation (29 October 2026): client lint, typecheck and production build passed; server typecheck/build and all three HTTP tests passed. A production-preview check in Edge passed Home/navigation, direct product/branch routes and reloads, not-found handling, and mobile layout without JavaScript page errors. These are scaffold checks; commerce workflows and production deployment are not verified.
 
+Local validation (2 November 2026): client `npm test` passed all five tests covering cart quantity/removal/clear invariants, invalid/missing/overflowing subtotals, and exact USD cent formatting. `npm run lint`, `npm run typecheck`, and `npm run build` passed. Independent code review rechecked the fixed safe-integer currency edge and found no remaining actionable findings in the inspected scope. Chrome development checks passed populated cart arithmetic, quantity edits, remove/clear, missing-price and empty states; production-preview checks passed `/check-order`, `/checkout`, `/cart` forwarding, direct route reloads, form validation/first-invalid focus/retained unsent fields, and social URL/icon targets. Both pages fit 320, 360, 768, 820, 1024, and 1440px checks; no browser page/console errors or email/order mutation requests were observed. Screenshots and the local harness are under ignored `tmp/`. Social websites can require login or block automated profile access; local tests verified link destinations, not authenticated platform rendering. No server changes, commits, pushes, deployment, or production commerce verification were performed. The user explicitly requested that changes stay unpushed.
+
 ---
+
+Publication authorization (2 November 2026): the user subsequently requested pushing these verified updates, including the palette reference, to a new branch named `moner`. This supersedes the earlier instruction to keep the changes unpushed. Publishing this branch does not deploy the application or complete the pending commerce/email services.
 
 # React Store — five-person project plan
 
 Planning baseline: 27 October 2026. This is a proposed specification and assignable backlog, not a record of completed implementation.
 
 Team: five members, all trained in frontend development. Names, available hours, deadline, and backend technology are not yet specified. React frontend comes first; a real backend comes later.
+
+Main color scheme (confirmed 29 October 2026): [Rolex Store color palette](rolex_store_color_palette.pdf). Use this supplied PDF as the visual reference. Currency confirmed by the user on 2 November 2026: USD ($), with integer cents for calculations.
 
 Repository: https://github.com/moner005/react-Store
 
@@ -70,7 +84,7 @@ AGENTS.md README.md .gitignore
 
 ### Project source layout
 
-The following is the planned feature layout. The repository currently contains its structural folders and entry points; feature behavior remains assigned backlog. Files marked **later** belong to the backend/auth phase; **optional** files need an actual caller or assigned task. Grouped filenames under a folder represent planned contents.
+The following is the planned feature layout. See the integration status above for the currently connected pages and services. Files marked **later** belong to the backend/auth phase; **optional** files need an actual caller or assigned task. Grouped filenames under a folder represent planned contents.
 
 ```text
 client/src/
@@ -218,6 +232,8 @@ When a fake API is assigned, Member 1 coordinates its data file; Member 2 suppli
 
 Use three stable location IDs: one warehouse and two branches. Product data is shared across branches; balances are separate. For this scope, prices are the same at both branches. A stock balance of zero means unavailable; it does not delete the product.
 
+Current review display contract: `rolex-store-cart` stores cart lines with `productId`, `quantity`, and a product display snapshot containing `id`, `name`, `price` (USD dollars or `null`), and optional `image` and `referenceNumber`. Cart, dashboard and order review share the conversion to integer cents. Missing or invalid amounts leave the full product subtotal unavailable. Cart quantity/removal/clear actions preserve the selected branch. Stock availability stays unknown until the location-specific read contract is implemented.
+
 Store invariants:
 
 1. Warehouse stock is not directly sellable on the customer site. A customer order uses exactly one selected branch.
@@ -229,7 +245,7 @@ Store invariants:
 7. Changing branch with a nonempty cart offers Cancel or Clear cart and switch. It never silently moves an existing order/cart to another branch.
 8. A confirmed demo save records the order and branch-stock deduction in one aggregate write. A confirmed validation rejection changes nothing. An ambiguous transport outcome remains unresolved until request-ID reconciliation; preserve cart/attempt data and clear the cart only after confirmed success.
 9. Order history keeps names and unit prices captured when ordered; later catalog edits do not rewrite old orders.
-10. Prices use one agreed currency and integer minor units (for example, cents in a two-decimal currency). Derive totals from lines; format only for display. Currency is a team decision.
+10. Prices use USD and integer cents, as confirmed on 2 November 2026. Derive totals from lines; format only for display. Display snapshots remain advisory; a future order service must validate authoritative prices.
 
 Demo integrity boundary: `services/api/store.ts` exclusively reads/validates/writes `/storeStates/demo` through the one Axios client. It serializes receipt/transfer/order changes for one active demo tab. Inventory and order facades delegate to it. One aggregate PUT is a teaching compromise, not a database transaction or cross-user stock guarantee.
 
@@ -403,4 +419,4 @@ Frontend release candidate:
 - README states how to run, how to exercise demo failure/status/stock cases, what is implemented, and what waits for backend.
 - Deployment configuration supports direct route visits/refresh. Local build evidence and deployed verification are recorded separately.
 
-Next ready work: agree branding and currency; use the Session 7 Tailwind convention; assign real names to Members 1–5; start S01/S02. Backend implementation is not required before the React learning phase.
+Next ready work: finish S01/S02's fake API and shared-contract agreements; assign real names to Members 1–5; connect real product and branch data before accepting catalog/cart integration. USD and the supplied palette are confirmed. The contact recipient and delivery service will be added later. Backend implementation is not required before the React learning phase.
