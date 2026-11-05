@@ -1,12 +1,16 @@
 import "@/pages/Home/index.css";
-import heroVideo from "@/assets/videos/homevideo.mp4"
-import watch1 from '@/assets/images/watch-1.jpg';
-import watch2 from '@/assets/images/watch-2.jpg';
+import heroVideo from "@/assets/videos/homevideo.mp4";
+import watch1 from "@/assets/images/watch-1.jpg";
+import watch2 from "@/assets/images/watch-2.jpg";
 import watch3 from "@/assets/images/watch-3.jpg";
+import toast from "react-hot-toast";
 import watch4 from "@/assets/images/watch-4.jpg";
 import { Link } from "react-router-dom";
 import { routes } from "@/constants/routes";
+import { useCartStore } from "@/stores/cartStore";
+
 function Index() {
+  const addItem = useCartStore((state) => state.addItem);
   const products = [
     {
       id: 1,
@@ -36,24 +40,14 @@ function Index() {
 
   return (
     <main>
-   <section className="hero">
+      <section className="hero">
+        {/* Background Video */}
+        <video className="hero-video" autoPlay muted loop playsInline>
+          <source src={heroVideo} type="video/mp4" />
+        </video>
 
-  {/* Background Video */}
-  <video
-    className="hero-video"
-    autoPlay
-    muted
-    loop
-    playsInline
-  >
-    <source
-      src={heroVideo}
-      type="video/mp4"
-    />
-  </video>
-
-  {/* Dark Overlay */}
-  <div className="hero-overlay"></div>
+        {/* Dark Overlay */}
+        <div className="hero-overlay"></div>
         <div className="hero-content">
           <p className="hero-subtitle">TIMELESS ELEGANCE</p>
           <h1>
@@ -68,9 +62,10 @@ function Index() {
             crafted for generations.
           </p>
 
-                  <Link to={routes.products}  className="shop-button">    SHOP NOW <span>→</span></Link>
-
-        
+          <Link to={routes.products} className="shop-button">
+            {" "}
+            SHOP NOW <span>→</span>
+          </Link>
         </div>
 
         {/* <div className="hero-dots">
@@ -81,21 +76,21 @@ function Index() {
         </div> */}
       </section>
 
-{/*     
+      {/*     
       <section className="warehouses" id="warehouses">
         <div className="section-label">
           <span></span>
           OUR WAREHOUSES
           <span></span>
         </div> */}
-{/* 
+      {/* 
         <h2>Choose Your Warehouse</h2>
 
         <p className="warehouse-description">
           Select the location you want to visit or receive your order from.
         </p> */}
 
-        {/* <div className="warehouse-buttons">
+      {/* <div className="warehouse-buttons">
           <button className="warehouse-button">
             <span className="location-icon">♧</span>
 
@@ -116,15 +111,16 @@ function Index() {
         </div> */}
       {/* </section> */}
 
-    
       <section className="featured-products" id="shop">
         <div className="products-heading">
           <h2>Featured Products</h2>
 
           <div className="heading-line"></div>
 
-       <Link to={routes.products}  className="view-all" > View All <span>→</span></Link>
-
+          <Link to={routes.products} className="view-all">
+            {" "}
+            View All <span>→</span>
+          </Link>
         </div>
 
         <div className="products-grid">
@@ -138,13 +134,20 @@ function Index() {
 
               <h3>{product.name}</h3>
 
-              <p className="product-price">
-                ${product.price}
-              </p>
+              <p className="product-price">${product.price}</p>
 
               <button
                 className="add-to-cart"
-                // onClick={() => alert(${product.name} added to cart!)}
+                onClick={() => {
+                  addItem({
+                    id: product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                    name: product.name,
+                    price: Number(product.price.replace(/,/g, "")),
+                    image: product.image,
+                  });
+
+                  toast.success(`${product.name} added successfully!`);
+                }}
               >
                 <span>🛒</span> Add to Cart
               </button>

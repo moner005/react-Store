@@ -1,37 +1,31 @@
-import { ScaffoldPage } from '@/components/common/ScaffoldPage';
+import { ScaffoldPage } from "@/components/common/ScaffoldPage";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getRolexWatches, type Watch } from "@/data/Products";
+import { useCartStore } from "@/stores/cartStore";
 import "./ProductDetails.css";
 
 function ProductDetails() {
+  const addItem = useCartStore((state) => state.addItem);
   const { slug } = useParams();
 
   const [watch, setWatch] = useState<Watch | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  
+
   // نقلنا الـ state والوظيفة إلى داخل المكون هنا 👇
   const [added, setAdded] = useState(false);
 
   function handleAddToCart() {
-    // تم تصحيح علامات التجميع الناقصة || أيضاً في هذه السطور
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (!watch) return;
 
-    const existingProduct = cart.find(
-      (item: any) => item.id === watch?.id
-    );
-
-    if (existingProduct) {
-      existingProduct.quantity += 1;
-    } else {
-      cart.push({
-        ...watch,
-        quantity: 1,
-      });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
+    addItem({
+      id: watch.slug,
+      name: watch.name,
+      price: null,
+      image: watch.thumbnailUrl,
+      referenceNumber: watch.referenceNumber,
+    });
 
     setAdded(true);
 
@@ -45,9 +39,7 @@ function ProductDetails() {
       try {
         const result = await getRolexWatches();
 
-        const selectedWatch = result.data.find(
-          (item) => item.slug === slug
-        );
+        const selectedWatch = result.data.find((item) => item.slug === slug);
 
         if (selectedWatch) {
           setWatch(selectedWatch);
@@ -76,7 +68,6 @@ function ProductDetails() {
   return (
     <main className="details-page">
       <div className="details-container">
-
         <div className="details-image-section">
           <div className="details-image-wrapper">
             <img
@@ -117,15 +108,11 @@ function ProductDetails() {
           </div>
 
           <p className="details-description">
-            Discover the elegance and timeless design of this
-            Rolex timepiece.
+            Discover the elegance and timeless design of this Rolex timepiece.
           </p>
 
           <div className="details-buttons">
-            <button
-              className="add-cart-button"
-              onClick={handleAddToCart}
-            >
+            <button className="add-cart-button" onClick={handleAddToCart}>
               {added ? "Added Successfully ✓" : "Add to Cart"}
             </button>
 
@@ -134,7 +121,6 @@ function ProductDetails() {
             </Link>
           </div>
         </div>
-
       </div>
     </main>
   );
