@@ -63,69 +63,40 @@ export default function LoginPage() {
 
     return (
         <section
-            className="login-page"
+            className="login-page relative grid min-h-screen place-items-center overflow-hidden px-4 py-6"
             aria-labelledby="login-title"
-            style={{
-                position: 'relative',
-                minHeight: 'calc(100vh - 140px)',
-                display: 'grid',
-                placeItems: 'center',
-                overflow: 'hidden',
-                padding: '2rem 1rem',
-            }}
         >
             <video
+                className="absolute inset-0 h-full w-full object-cover"
                 autoPlay
                 loop
                 muted
                 playsInline
                 poster="/assets/Login.png"
                 aria-hidden="true"
-                style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                }}
             >
                 <source src="/assets/Login.mp4" type="video/mp4" />
             </video>
-            <div
-                aria-hidden="true"
-                style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'rgba(20, 32, 25, .48)',
-                }}
-            />
-            <div
-                className="panel"
-                style={{
-                    position: 'relative',
-                    width: 'min(100%, 760px)',
-                    margin: 0,
-                    background: 'rgba(255, 255, 255, .94)',
-                    backdropFilter: 'blur(6px)',
-                }}
-            >
-                <p className="eyebrow">Welcome back</p>
-                <h1 id="login-title">Log in to React Store</h1>
-                <p>
+            <div className="absolute inset-0 bg-slate-950/50" aria-hidden="true" />
+            <div className="relative w-full max-w-lg rounded-2xl border border-white/40 bg-white/20 p-6 shadow-2xl backdrop-blur-xl sm:p-10">
+                <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">Welcome back</p>
+                <h1 id="login-title" className="mb-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">Log in to React Store</h1>
+                <p className="mb-8 leading-7 text-white/85">
                     Sign in to manage your account and continue shopping.
                 </p>
 
                 {submitted ? (
-                    <div className="notice" role="status">
-                        <strong>Login details are valid.</strong>
+                    <div className="mb-6 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 text-sm leading-6 text-amber-900" role="status">
+                        <strong className="block text-amber-950">Login details are valid.</strong>
                         You will be signed in when the authentication service is connected.
                     </div>
                 ) : null}
 
-                <form onSubmit={handleSubmit} noValidate>
-                    <div>
-                        <label htmlFor="login-email">Email address</label>
+                <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-white" htmlFor="login-email">Email address</label>
                         <input
+                            className="w-full rounded-lg border border-white/50 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-500 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-300/30"
                             id="login-email"
                             name="email"
                             type="email"
@@ -135,12 +106,13 @@ export default function LoginPage() {
                             aria-invalid={Boolean(errors.email)}
                             aria-describedby={errors.email ? 'login-email-error' : undefined}
                         />
-                        {errors.email ? <p id="login-email-error" role="alert">{errors.email}</p> : null}
+                        {errors.email ? <p className="text-sm text-red-600" id="login-email-error" role="alert">{errors.email}</p> : null}
                     </div>
 
-                    <div>
-                        <label htmlFor="login-password">Password</label>
+                    <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-white" htmlFor="login-password">Password</label>
                         <input
+                            className="w-full rounded-lg border border-white/50 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-500 focus:border-emerald-300 focus:ring-4 focus:ring-emerald-300/30"
                             id="login-password"
                             name="password"
                             type="password"
@@ -151,15 +123,15 @@ export default function LoginPage() {
                             aria-describedby={errors.password ? 'login-password-error' : undefined}
                         />
                         {errors.password ? (
-                            <p id="login-password-error" role="alert">{errors.password}</p>
+                            <p className="text-sm text-red-600" id="login-password-error" role="alert">{errors.password}</p>
                         ) : null}
                     </div>
 
-                    <button className="button primary" type="submit">Log in</button>
+                    <button className="w-full rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-600/30" type="submit">Log in</button>
                 </form>
 
-                <p>
-                    Don&apos;t have an account? <Link to="/register">Create one</Link>
+                <p className="mt-6 text-center text-sm text-white/85">
+                    Don&apos;t have an account? <Link className="font-semibold text-emerald-100 hover:text-white hover:underline" to="/register">Create one</Link>
                 </p>
             </div>
         </section>
