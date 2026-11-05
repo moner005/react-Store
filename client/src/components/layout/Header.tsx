@@ -1,7 +1,7 @@
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { routes } from "@/constants/routes";
 import { useCartStore } from "@/stores/cartStore";
 import Theme from "@/components/Theme/Theme";
-import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import "./Header.css";
 
@@ -24,6 +24,7 @@ function Header() {
         </Link>
         <Link to={routes.products}>Products</Link>
         <Link to={routes.cart}>Cart</Link>
+        <Link to={routes.branches}>Branches</Link>
         {/* <NavLink to={routes.contact}>Contact</NavLink> */}
       </nav>
 
