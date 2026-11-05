@@ -11,6 +11,8 @@ import Footer from '@/components/layout/Footer';
 import Home from '@/pages/Home/index.tsx';
 import ProductDetails from "./pages/Products/ProductDetails";
 import { ThemeProvider } from "./context/ThemeContext";
+import Branches from "./pages/Branches";
+
 function App() {
   return (
     <>
@@ -21,6 +23,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:slug" element={<ProductDetails />} />
+        <Route path="/management/branches" element={<Branches />} />
       </Routes>
 
       <Footer />

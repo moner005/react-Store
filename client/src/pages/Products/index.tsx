@@ -1,4 +1,3 @@
-import { ScaffoldPage } from '@/components/common/ScaffoldPage'
 import { useEffect, useState } from "react";
 import { getRolexWatches, type Watch } from "@/data/Products";
 import "@/pages/Products/index.css";
