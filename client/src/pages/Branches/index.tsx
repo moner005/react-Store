@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import "./Branches.css";
+import { useNavigate } from "react-router-dom";
 
 type City = "Damascus" | "Latakia";
 
@@ -90,6 +90,7 @@ const products: Product[] = [
 
 function Branches() {
   const [selectedCity, setSelectedCity] = useState("All");
+  const navigate = useNavigate();
 
   const filteredProducts =
     selectedCity === "All"
@@ -100,7 +101,9 @@ function Branches() {
     <main className="products-page" dir="ltr">
       <section className="products-banner">
         <p className="products-subtitle">DISCOVER OUR COLLECTION</p>
+
         <h1>Luxury Watches</h1>
+
         <p>
           Discover our exclusive collection of luxury watches,
           carefully selected to match your style.
@@ -110,7 +113,9 @@ function Branches() {
       <section className="products-section">
         <div className="products-heading">
           <h2>Our Watches</h2>
+
           <div className="heading-line" />
+
           <span className="products-count">
             {filteredProducts.length} Products
           </span>
@@ -140,11 +145,18 @@ function Branches() {
                   src={product.image}
                   alt={product.name}
                   className="product-image"
+                  loading="lazy"
                 />
-                <span className="product-city">{product.city}</span>
+
+                <span className="product-city">
+                  {product.city}
+                </span>
               </div>
 
-              <p className="product-category">{product.category}</p>
+              <p className="product-category">
+                {product.category}
+              </p>
+
               <h3>{product.name}</h3>
 
               <p className="product-price">
@@ -154,7 +166,7 @@ function Branches() {
               <button
                 className="add-to-cart"
                 onClick={() =>
-                  alert(`Selected product: ${product.name}`)
+                  navigate(`/products/${product.id}`)
                 }
               >
                 View Product
