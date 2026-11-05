@@ -106,7 +106,7 @@ export default function LoginPage() {
                             aria-invalid={Boolean(errors.email)}
                             aria-describedby={errors.email ? 'login-email-error' : undefined}
                         />
-                        {errors.email ? <p className="text-sm text-red-600" id="login-email-error" role="alert">{errors.email}</p> : null}
+                        {errors.email ? <p className="text-sm text-red-400" id="login-email-error" role="alert">{errors.email}</p> : null}
                     </div>
 
                     <div className="space-y-2">
@@ -123,7 +123,7 @@ export default function LoginPage() {
                             aria-describedby={errors.password ? 'login-password-error' : undefined}
                         />
                         {errors.password ? (
-                            <p className="text-sm text-red-600" id="login-password-error" role="alert">{errors.password}</p>
+                            <p className="text-sm text-red-400" id="login-password-error" role="alert">{errors.password}</p>
                         ) : null}
                     </div>
 
