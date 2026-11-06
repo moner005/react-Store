@@ -89,8 +89,8 @@ export default function LoginPage() {
             >
                 <source src="/assets/Login.mp4" type="video/mp4" />
             </video>
-            <div className="absolute inset-0 bg-slate-950/50" aria-hidden="true" />
-            <div className="relative w-full max-w-lg rounded-2xl border border-white/40 bg-white/20 p-6 shadow-2xl backdrop-blur-xl sm:p-10">
+            <div className="absolute inset-0 z-0 bg-slate-950/50" aria-hidden="true" />
+            <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/40 bg-white/20 p-6 shadow-2xl backdrop-blur-xl sm:p-10">
                 <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">Welcome back</p>
                 <h1 id="login-title" className="mb-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">Log in to React Store</h1>
                 <p className="mb-8 leading-7 text-white/85">

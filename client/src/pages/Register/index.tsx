@@ -102,8 +102,8 @@ export default function RegisterPage() {
             >
                 <source src="/assets/Register.mp4" type="video/mp4" />
             </video>
-            <div className="absolute inset-0 bg-slate-950/50" aria-hidden="true" />
-            <div className="relative w-full max-w-lg rounded-2xl border border-white/40 bg-white/20 p-4 shadow-2xl backdrop-blur-xl sm:p-5">
+            <div className="absolute inset-0 z-0 bg-slate-950/50" aria-hidden="true" />
+            <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/40 bg-white/20 p-4 shadow-2xl backdrop-blur-xl sm:p-5">
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">Create your account</p>
                 <h1 id="register-title" className="mb-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Join React Store</h1>
                 <p className="mb-3 leading-6 text-white/85">
