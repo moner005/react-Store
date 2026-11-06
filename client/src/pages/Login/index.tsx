@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/stores/authStore';
+const DASHBOARD_ROUTE = '/dashboard';
+const REGISTER_ROUTE = '/register';
+
 
 type LoginValues = {
     email: string;
@@ -34,6 +39,8 @@ export default function LoginPage() {
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState<LoginErrors>({});
     const [submitted, setSubmitted] = useState(false);
+    const navigate = useNavigate();
+    const login = useAuthStore((state) => state.login);
 
     function handleChange({ target }: ChangeEvent<HTMLInputElement>) {
         const { name, value } = target;
@@ -57,8 +64,13 @@ export default function LoginPage() {
             return;
         }
 
+        const isLoginSuccessful = login(values.email, values.password);
+        if (!isLoginSuccessful) {
+            setErrors({ password: 'Invalid email or password.' });
+            return;
+        }
         setErrors({});
-        setSubmitted(true);
+        navigate(DASHBOARD_ROUTE);
     }
 
     return (
@@ -131,7 +143,7 @@ export default function LoginPage() {
                 </form>
 
                 <p className="mt-6 text-center text-sm text-white/85">
-                    Don&apos;t have an account? <Link className="font-semibold text-emerald-100 hover:text-white hover:underline" to="/register">Create one</Link>
+                    Don&apos;t have an account? <Link className="font-semibold text-emerald-100 hover:text-white hover:underline" to={REGISTER_ROUTE}>Create one</Link>
                 </p>
             </div>
         </section>
