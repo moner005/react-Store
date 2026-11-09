@@ -8,9 +8,9 @@ Main color scheme: [Rolex Store color palette](docs/rolex_store_color_palette.pd
 
 - `/` shows the storefront and featured items. `/products` and `/products/:slug` show the Dials catalog and details.
 - `/cart`, `/dashboard`, and `/check-order` (also `/checkout`) share the browser cart. Product subtotals are displayed in USD when all line prices are available. Stock checks, taxes, delivery, and order submission are pending.
-- `/management/branches` shows filterable sample listings for Damascus and Latakia. The sample SYP display values are separate from USD cart pricing.
+- `/management/branches` loads the Dials catalog and links to watch details. Damascus/Latakia assignments are a demonstration, with stock availability pending.
 - `/contact` includes a locally validated form and Rolex website, retailer locator, and social links. Email delivery awaits a recipient and sending service.
-- `/login` and `/register` are previews. Authentication and session management remain pending.
+- `/login` and `/register` validate forms and use browser localStorage for demo accounts and sessions. Passwords in the demo user records are stored as plain text. Server authentication remains pending.
 
 ## Requirements
 

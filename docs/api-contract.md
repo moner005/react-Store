@@ -16,6 +16,8 @@ Unknown routes return HTTP 404 with `{ "error": { "message": "Not found" } }`. U
 
 The integrated client uses Vite's `/api` proxy to read `GET /v1/models?brand=rolex&page=1&pageSize=24` from Dials. The list and details render catalog metadata. Catalog items can enter the browser cart with an unavailable price. This provider is separate from the Express server.
 
+The Branches page also uses this catalog read and assigns records alternately to Damascus and Latakia for demonstration. Location-specific stock awaits an API contract. Login and registration currently use a client-only localStorage service with demo users and sessions.
+
 ## Proposed, not implemented
 
 The frontend order-review and contact pages do not add API endpoints. Stock checks, authoritative pricing, order submission, and contact email delivery remain unavailable. The contact recipient will be supplied later; local form validation does not send a message.

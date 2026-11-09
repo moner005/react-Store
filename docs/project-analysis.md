@@ -1,3 +1,13 @@
+# Backup update — 9 November 2026
+
+The local `backup` was brought forward to Hasan's published integration at `a9ecffb`, including `feature/auth-pages` through `887380b`. Ibrahim's `ibrahim-branches-api` at `599bb1f` merges cleanly into that version. The user requested publication to the existing `backup` for continued review, with approval still required before updating `main`.
+
+Login and registration now use form validation and a client-only localStorage user/session service. Stored demo user records contain plain-text passwords. Server authentication and authorization remain pending. Branches now loads the same Dials catalog as Products, links by watch slug, and filters demonstration assignments to Damascus/Latakia. Real branch balances and availability remain pending.
+
+Integration corrections retain the branch-allocation notice, style its new detail links, return explicit session fields to resolve the auth lint error, and place the font import before Tailwind to resolve the CSS build warning.
+
+Validation on 9 November passed all six client tests, lint, typecheck and production build. The production-preview browser pass covered the live 24-watch catalog, 12 records per demo branch, detail links and reloads, unpriced cart handoff, registration validation and a local account, rejected/accepted login and session persistence, contact validation, and nine routes at 360/820/1440 pixels. Empty and failed catalog responses were exercised with browser test interception. No uncaught page errors or server write requests were observed. The order-review heading has an explicit responsive size to preserve its appearance with Tailwind enabled. Test accounts existed in an isolated browser context. Evidence is under ignored `tmp/backup-nov9` and `tmp/verify-backup-nov9.cjs`.
+
 # Backup integration — 6 November 2026
 
 Review branch `backup` starts at `main` (`593a1f6`) and combines `lamis` (`588323e`, included through Hala), `cart_dashboard/hala` (`467a2e9`), `ibrahim` (`e09583f`), `moner` (`c9ed72c`), and `feature/auth-pages` (`0795b6a`). Approval of the combined branch is required before updating `main`.

@@ -41,8 +41,7 @@ export function loginUser(email: string, password: string): SessionUser | null {
     if(user === undefined) {
         return null;
     }
-    const { password: _password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return { id: user.id, name: user.name, email: user.email };
   } catch (error) {
     console.error("Error logging in user from localStorage:", error);
     return null;

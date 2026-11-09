@@ -6,6 +6,9 @@
 
 .review-page h1 {
   font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.1;
+  margin-bottom: 1rem;
   font-weight: 400;
   letter-spacing: -.035em;
   color: var(--text-color);

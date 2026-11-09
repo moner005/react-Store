@@ -173,7 +173,10 @@
   font-size: .8rem;
 }
 
-.branches-page .add-to-cart {
+.branches-page .add-to-cart,
+.branches-page .details-button {
+  display: inline-block;
+  text-align: center;
   width: 100%;
   padding: 10px;
   border: 1px solid #c8a96b;
@@ -184,7 +187,8 @@
   transition: 0.3s ease;
 }
 
-.branches-page .add-to-cart:hover {
+.branches-page .add-to-cart:hover,
+.branches-page .details-button:hover {
   background-color: #c8a96b;
   color: #111111;
 }
