@@ -557,8 +557,7 @@ function DashboardPage() {
 
       <footer className="admin-dashboard-footer">
         Catalogue information is provided by the existing Dials API.
-        Sales and stock figures are not available until backend
-        integration is implemented.
+
       </footer>
 
     </main>
