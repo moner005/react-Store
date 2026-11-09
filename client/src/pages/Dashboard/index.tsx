@@ -1,320 +1,531 @@
 
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+
+import { getRolexWatches, type Watch, type WatchesResponse } from '@/data/Products'
 import { routes } from '@/constants/routes'
-import { useCartStore } from '@/stores/cartStore'
-import { dollarsToMinor, formatUsd } from '@/utils/money'
-import { countCartItems, lineTotalMinor, productSubtotal } from '@/utils/totals'
 import './Dashboard.css'
 
 function DashboardPage() {
-  const items = useCartStore((state) => state.items)
+  const [catalog, setCatalog] = useState<WatchesResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [refreshKey, setRefreshKey] = useState(0)
 
-  const totalUnits = countCartItems(items)
-  const totalValue = productSubtotal(items)
-  const unpricedItems = items.filter((item) => lineTotalMinor(item) === null)
+  // Load the catalogue from the existing API
+  useEffect(() => {
+    let isActive = true
 
-  const mostSelected = [...items].sort(
-    (a, b) => b.quantity - a.quantity
-  )[0]
+    async function loadCatalog() {
+      setLoading(true)
+      setError('')
 
-  const productShares = items.map((item) => ({
-    ...item,
-    share: totalUnits !== null && totalUnits > 0
-      ? (item.quantity / totalUnits) * 100
-      : 0,
-  }))
+      try {
+        const result = await getRolexWatches()
+
+        if (isActive) {
+          setCatalog(result)
+        }
+      } catch (err) {
+        console.error('Dashboard catalogue error:', err)
+
+        if (isActive) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Unable to load catalogue data.'
+          )
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadCatalog()
+
+    return () => {
+      isActive = false
+    }
+  }, [refreshKey])
+
+  const watches = catalog?.data ?? []
+
+  // Calculate collection distribution from loaded API results
+  const collections = useMemo(() => {
+    const counts: Record<string, number> = {}
+
+    watches.forEach((watch) => {
+      const collectionName =
+        watch.series?.name || 'Unclassified'
+
+      counts[collectionName] =
+        (counts[collectionName] || 0) + 1
+    })
+
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+  }, [watches])
 
   const stats = [
     {
-      label: 'Unique Products',
-      value: items.length,
-      description: 'Different watches selected',
+      label: 'TOTAL ROLEX MODELS',
+      value: loading
+        ? '...'
+        : catalog?.total.toLocaleString() ?? '—',
+      description: 'Total models reported by the API',
       icon: '♛',
     },
     {
-      label: 'Total Units',
-      value: totalUnits ?? 'Unavailable',
-      description: 'Total selected quantities',
+      label: 'MODELS LOADED',
+      value: loading
+        ? '...'
+        : watches.length.toLocaleString(),
+      description: 'Models returned in the current page',
       icon: '◈',
     },
     {
-      label: 'Cart Value',
-      value: totalValue === null ? 'Unavailable' : formatUsd(totalValue),
-      description: 'Product subtotal',
-      icon: '$',
+      label: 'COLLECTIONS',
+      value: loading
+        ? '...'
+        : collections.length.toLocaleString(),
+      description: 'Collections in the loaded results',
+      icon: '◇',
     },
     {
-      label: 'Prices Unavailable',
-      value: unpricedItems.length,
-      description: 'Products without catalogue prices',
-      icon: '◇',
+      label: 'CATALOGUE STATUS',
+      value: loading
+        ? 'Loading'
+        : error
+          ? 'Offline'
+          : 'Connected',
+      description: error
+        ? 'Could not retrieve catalogue data'
+        : 'Connection to catalogue API',
+      icon: '◎',
     },
   ]
 
-  return (
-    <section className="dashboard-page">
+  const maxCollectionCount = Math.max(
+    1,
+    ...collections.map((collection) => collection.count)
+  )
 
-      <header className="dashboard-header">
+  return (
+    <main className="admin-dashboard">
+
+      {/* PAGE HEADER */}
+
+      <header className="admin-dashboard-header">
 
         <div>
-          <p className="dashboard-eyebrow">
+          <p className="admin-eyebrow">
             ROLEX STORE MANAGEMENT
           </p>
 
-          <h1>Dashboard</h1>
+          <h1>Store Dashboard</h1>
 
-          <p>
-            An overview of your current store selection.
+          <p className="admin-subtitle">
+            Monitor your catalogue and store operations.
           </p>
         </div>
 
-        <Link
-          to={routes.cart}
-          className="dashboard-cart-button"
-        >
-          View Shopping Cart →
-        </Link>
+        <div className="admin-header-actions">
+
+          <button
+            type="button"
+            className="admin-refresh-button"
+            onClick={() => setRefreshKey((current) => current + 1)}
+            disabled={loading}
+          >
+            <span>↻</span>
+            {loading ? 'Loading...' : 'Refresh Data'}
+          </button>
+
+          <Link
+            to={routes.products}
+            className="admin-primary-button"
+          >
+            View Catalogue →
+          </Link>
+
+        </div>
 
       </header>
 
       {/* STATISTICS */}
 
-      <section className="dashboard-stats">
+      <section className="admin-stats-grid">
 
         {stats.map((stat, index) => (
+
           <article
-            className="dashboard-stat"
+            className="admin-stat-card"
             key={stat.label}
             style={{
               animationDelay: `${index * 100}ms`,
             }}
           >
 
-            <div className="dashboard-stat-top">
+            <div className="admin-stat-top">
+
               <span>{stat.label}</span>
-              <span className="dashboard-icon">
+
+              <span className="admin-stat-icon">
                 {stat.icon}
               </span>
+
             </div>
 
-            <h2>{stat.value}</h2>
+            <h2
+              className={
+                stat.label === 'CATALOGUE STATUS'
+                  ? error
+                    ? 'status-offline'
+                    : 'status-online'
+                  : ''
+              }
+            >
+              {stat.value}
+            </h2>
 
             <p>{stat.description}</p>
 
           </article>
+
         ))}
 
       </section>
 
-      {/* MAIN DASHBOARD CONTENT */}
+      {/* ERROR STATE */}
 
-      <section className="dashboard-content">
+      {error && (
 
-        <div className="dashboard-panel">
+        <section className="admin-error">
 
-          <div className="dashboard-panel-header">
+          <div>
+            <strong>Catalogue unavailable</strong>
+
+            <p>{error}</p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setRefreshKey((current) => current + 1)}
+          >
+            Try Again
+          </button>
+
+        </section>
+
+      )}
+
+      {/* ANALYTICS AND OPERATIONS */}
+
+      <section className="admin-main-grid">
+
+        {/* COLLECTION ANALYTICS */}
+
+        <article className="admin-panel">
+
+          <div className="admin-panel-header">
 
             <div>
-              <p className="dashboard-eyebrow">
-                PRODUCT ANALYTICS
+              <p className="admin-eyebrow">
+                CATALOGUE ANALYTICS
               </p>
 
-              <h2>Selection Breakdown</h2>
+              <h2>Collection Distribution</h2>
             </div>
 
-            <span className="dashboard-total">
-              {totalUnits ?? 'Unavailable'} Units
-            </span>
+            <span className="admin-panel-icon">◈</span>
 
           </div>
 
-          {items.length === 0 ? (
+          {loading ? (
 
-            <div className="dashboard-empty">
-              <span>♛</span>
+            <div className="admin-state-message">
+              Loading collections...
+            </div>
 
-              <h3>No Products Selected</h3>
+          ) : collections.length === 0 ? (
 
-              <p>
-                Add watches to your shopping cart to
-                see your selection analytics.
-              </p>
-
-              <Link to={routes.products}>
-                Explore Collection →
-              </Link>
+            <div className="admin-state-message">
+              No collection data available.
             </div>
 
           ) : (
 
-            <div className="dashboard-bars">
+            <div className="admin-collection-list">
 
-              {productShares.map((item) => (
-                <div
-                  className="dashboard-bar-item"
-                  key={item.productId}
-                >
+              {collections.slice(0, 8).map((collection) => {
 
-                  <div className="dashboard-bar-info">
-                    <strong>{item.product.name}</strong>
+                const percentage =
+                  (collection.count / watches.length) * 100
 
-                    <span>
-                      {item.quantity} units
-                    </span>
+                const barWidth =
+                  (collection.count / maxCollectionCount) * 100
+
+                return (
+
+                  <div
+                    className="admin-collection-item"
+                    key={collection.name}
+                  >
+
+                    <div className="admin-collection-info">
+
+                      <strong>{collection.name}</strong>
+
+                      <span>
+                        {collection.count} models
+                      </span>
+
+                    </div>
+
+                    <div className="admin-progress-track">
+
+                      <div
+                        className="admin-progress-fill"
+                        style={{
+                          width: `${barWidth}%`,
+                        }}
+                      />
+
+                    </div>
+
+                    <p>
+                      {percentage.toFixed(1)}% of loaded models
+                    </p>
+
                   </div>
 
-                  <div className="dashboard-track">
-
-                    <div
-                      className="dashboard-progress"
-                      style={{
-                        width: `${item.share}%`,
-                      }}
-                    />
-
-                  </div>
-
-                  <p>
-                    {item.share.toFixed(1)}% of selected units
-                  </p>
-
-                </div>
-              ))}
+                )
+              })}
 
             </div>
 
           )}
 
-        </div>
+          {!loading && collections.length > 0 && (
+            <p className="admin-footnote">
+              Analysis is based on the currently loaded API page,
+              not necessarily the entire catalogue.
+            </p>
+          )}
 
-        {/* QUICK SUMMARY */}
+        </article>
 
-        <aside className="dashboard-panel dashboard-side">
+        {/* BUSINESS OPERATIONS */}
 
-          <p className="dashboard-eyebrow">
-            COLLECTION SUMMARY
-          </p>
+        <article className="admin-panel admin-operations">
 
-          <h2>Quick Insights</h2>
+          <div className="admin-panel-header">
 
-          <div className="dashboard-insight">
+            <div>
+              <p className="admin-eyebrow">
+                STORE OPERATIONS
+              </p>
 
-            <span>Most Selected Watch</span>
+              <h2>System Overview</h2>
+            </div>
 
-            <strong>
-              {mostSelected
-                ? mostSelected.product.name
-                : 'No selection yet'}
-            </strong>
-
-          </div>
-
-          <div className="dashboard-insight">
-
-            <span>Total Cart Items</span>
-
-            <strong>{items.length}</strong>
+            <span className="admin-panel-icon">◇</span>
 
           </div>
 
-          <div className="dashboard-insight">
+          <div className="admin-operation-item">
 
-            <span>Known Cart Value</span>
+            <div className="admin-operation-icon">
+              ♛
+            </div>
 
-            <strong>{totalValue === null ? 'Unavailable' : formatUsd(totalValue)}</strong>
+            <div className="admin-operation-info">
+
+              <strong>Product Catalogue</strong>
+
+              <span>
+                External catalogue API
+              </span>
+
+            </div>
+
+            <span className={
+              loading
+                ? 'admin-status pending'
+                : error
+                  ? 'admin-status offline'
+                  : 'admin-status online'
+            }>
+              {loading
+                ? 'Loading'
+                : error
+                  ? 'Offline'
+                  : 'Connected'}
+            </span>
 
           </div>
 
-          <div className="dashboard-actions">
+          <div className="admin-operation-item">
 
-            <Link to={routes.products}>
-              Browse Collection →
-            </Link>
+            <div className="admin-operation-icon">
+              ◷
+            </div>
 
-            <Link to={routes.cart}>
-              Manage Cart →
-            </Link>
+            <div className="admin-operation-info">
+
+              <strong>Sales & Orders</strong>
+
+              <span>
+                Order management API
+              </span>
+
+            </div>
+
+            <span className="admin-status pending">
+              Not connected
+            </span>
 
           </div>
 
-        </aside>
+          <div className="admin-operation-item">
+
+            <div className="admin-operation-icon">
+              ◈
+            </div>
+
+            <div className="admin-operation-info">
+
+              <strong>Inventory</strong>
+
+              <span>
+                Stock management API
+              </span>
+
+            </div>
+
+            <span className="admin-status pending">
+              Not connected
+            </span>
+
+          </div>
+
+          <div className="admin-operation-notice">
+            Sales, orders and inventory statistics will become
+            available after connecting the store backend.
+          </div>
+
+        </article>
 
       </section>
 
-      {/* CURRENT CART PRODUCTS */}
+      {/* PRODUCT CATALOGUE TABLE */}
 
-      <section className="dashboard-panel dashboard-table-panel">
+      <section className="admin-panel admin-catalogue-panel">
 
-        <div className="dashboard-panel-header">
+        <div className="admin-panel-header">
 
           <div>
-            <p className="dashboard-eyebrow">
-              CURRENT SELECTION
+            <p className="admin-eyebrow">
+              PRODUCT MANAGEMENT
             </p>
 
-            <h2>Selected Products</h2>
+            <h2>Catalogue Overview</h2>
           </div>
 
-          <Link to={routes.cart}>
-            Manage Cart →
+          <Link
+            to={routes.products}
+            className="admin-text-link"
+          >
+            View All Products →
           </Link>
 
         </div>
 
-        {items.length === 0 ? (
+        {loading ? (
 
-          <p className="dashboard-table-empty">
-            No products available to display.
-          </p>
+          <div className="admin-state-message">
+            Loading Rolex catalogue...
+          </div>
+
+        ) : error ? (
+
+          <div className="admin-state-message">
+            Catalogue data could not be loaded.
+          </div>
+
+        ) : watches.length === 0 ? (
+
+          <div className="admin-state-message">
+            No products returned by the API.
+          </div>
 
         ) : (
 
-          <div className="dashboard-table-wrapper">
+          <div className="admin-table-wrapper">
 
-            <table className="dashboard-table">
+            <table className="admin-table">
 
               <thead>
                 <tr>
-                  <th>Product</th>
-                  <th>Reference</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Subtotal</th>
+                  <th>WATCH</th>
+                  <th>COLLECTION</th>
+                  <th>REFERENCE</th>
+                  <th>BRAND</th>
+                  <th>DETAILS</th>
                 </tr>
               </thead>
 
               <tbody>
 
-                {items.map((item) => {
-                  const unitPrice = dollarsToMinor(item.product.price ?? Number.NaN)
-                  const lineTotal = lineTotalMinor(item)
-                  return (
-                  <tr key={item.productId}>
+                {watches.slice(0, 8).map((watch: Watch) => (
 
-                    <td>{item.product.name}</td>
+                  <tr key={watch.id}>
 
                     <td>
-                      {item.product.referenceNumber || '—'}
+
+                      <div className="admin-watch-cell">
+
+                        <img
+                          src={watch.thumbnailUrl}
+                          alt={watch.name}
+                          loading="lazy"
+                        />
+
+                        <strong>{watch.name}</strong>
+
+                      </div>
+
                     </td>
 
-                    <td>{item.quantity}</td>
-
                     <td>
-                      {unitPrice === null
-                        ? 'Unavailable'
-                        : formatUsd(unitPrice)}
+                      {watch.series?.name || '—'}
                     </td>
 
                     <td>
-                      {lineTotal === null
-                        ? 'Unavailable'
-                        : formatUsd(lineTotal)}
+                      {watch.referenceNumber || '—'}
+                    </td>
+
+                    <td>
+                      {watch.brand?.name || 'Rolex'}
+                    </td>
+
+                    <td>
+
+                      <Link
+                        to={`/products/${watch.slug}`}
+                        className="admin-details-link"
+                      >
+                        View →
+                      </Link>
+
                     </td>
 
                   </tr>
 
-                  )
-                })}
+                ))}
 
               </tbody>
 
@@ -324,9 +535,33 @@ function DashboardPage() {
 
         )}
 
+        {catalog && (
+
+          <div className="admin-table-footer">
+
+            <span>
+              Showing {watches.length} models from page {catalog.page}.
+            </span>
+
+            <span>
+              API catalogue total: {catalog.total.toLocaleString()}
+            </span>
+
+          </div>
+
+        )}
+
       </section>
 
-    </section>
+      {/* DASHBOARD FOOTNOTE */}
+
+      <footer className="admin-dashboard-footer">
+        Catalogue information is provided by the existing Dials API.
+        Sales and stock figures are not available until backend
+        integration is implemented.
+      </footer>
+
+    </main>
   )
 }
 

@@ -1,43 +1,59 @@
+
 import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
-import type { CartItem, CartProduct, CartState } from '@/types/cart'
-import { dollarsToMinor } from '../utils/money.ts'
+import {
+  persist,
+  createJSONStorage,
+} from 'zustand/middleware'
+
+import type {
+  CartItem,
+  CartProduct,
+  CartState,
+} from '@/types/cart'
 
 interface CartStore extends CartState {
-  addItem: (product: CartProduct) => boolean
+  addItem: (product: CartProduct) => void
   removeItem: (productId: string) => void
   updateQuantity: (productId: string, quantity: number) => void
   clear: () => void
 }
 
+// Validate saved cart data before restoring it
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
-function isValidProduct(value: unknown): value is CartProduct {
-  if (!isRecord(value)) return false
-  return typeof value.id === 'string'
-    && value.id.length > 0
-    && typeof value.name === 'string'
-    && (value.price === null || (typeof value.price === 'number' && Number.isFinite(value.price)))
-    && (value.image === undefined || typeof value.image === 'string')
-    && (value.referenceNumber === undefined || typeof value.referenceNumber === 'string')
-}
-
-function isSupportedProduct(product: CartProduct): boolean {
-  return product.price === null || dollarsToMinor(product.price) !== null
-}
-
 function isValidCartItem(value: unknown): value is CartItem {
-  if (!isRecord(value) || !isValidProduct(value.product)) return false
-  return typeof value.productId === 'string'
-    && value.productId === value.product.id
-    && Number.isSafeInteger(value.quantity)
-    && (value.quantity as number) > 0
-}
+  if (!isRecord(value) || !isRecord(value.product)) {
+    return false
+  }
 
-function removeItems(items: CartItem[], productId: string): CartItem[] {
-  return items.filter((item) => item.productId !== productId)
+  const product = value.product
+
+  return (
+    typeof value.productId === 'string' &&
+    typeof value.quantity === 'number' &&
+    Number.isInteger(value.quantity) &&
+    value.quantity > 0 &&
+    typeof product.id === 'string' &&
+    typeof product.name === 'string' &&
+    (
+      product.price === null ||
+      (
+        typeof product.price === 'number' &&
+        Number.isFinite(product.price) &&
+        product.price >= 0
+      )
+    ) &&
+    (
+      product.image === undefined ||
+      typeof product.image === 'string'
+    ) &&
+    (
+      product.referenceNumber === undefined ||
+      typeof product.referenceNumber === 'string'
+    )
+  )
 }
 
 export const useCartStore = create<CartStore>()(
@@ -45,56 +61,116 @@ export const useCartStore = create<CartStore>()(
     (set) => ({
       items: [],
       selectedBranchId: null,
+
+      // Add a product or increase its quantity
       addItem: (product) => {
-        if (!isValidProduct(product) || !isSupportedProduct(product)) return false
-        let accepted = false
+        if (
+          !product.id ||
+          !product.name.trim() ||
+          (
+            product.price !== null &&
+            (
+              !Number.isFinite(product.price) ||
+              product.price < 0
+            )
+          )
+        ) {
+          return
+        }
+
         set((state) => {
-          const existing = state.items.find((item) => item.productId === product.id)
-          if (!existing) {
-            accepted = true
-            return { items: [...state.items, { productId: product.id, quantity: 1, product }] }
+          const existingItem = state.items.find(
+            (item) => item.productId === product.id
+          )
+
+          if (existingItem) {
+            return {
+              items: state.items.map((item) =>
+                item.productId === product.id
+                  ? {
+                      ...item,
+                      quantity: item.quantity + 1,
+                      product,
+                    }
+                  : item
+              ),
+            }
           }
-          if (!Number.isSafeInteger(existing.quantity + 1)) return state
-          accepted = true
+
+          const newItem: CartItem = {
+            productId: product.id,
+            quantity: 1,
+            product,
+          }
+
           return {
-            items: state.items.map((item) => item.productId === product.id
-              ? { ...item, quantity: item.quantity + 1, product }
-              : item),
+            items: [...state.items, newItem],
           }
         })
-        return accepted
       },
-      removeItem: (productId) => set((state) => ({ items: removeItems(state.items, productId) })),
-      updateQuantity: (productId, quantity) => {
-        if (!Number.isSafeInteger(quantity) || quantity < 1) return
+
+      // Remove a product completely
+      removeItem: (productId) =>
         set((state) => ({
-          items: state.items.map((item) => item.productId === productId ? { ...item, quantity } : item),
+          items: state.items.filter(
+            (item) => item.productId !== productId
+          ),
+        })),
+
+      // Update quantity and remove the product at zero
+      updateQuantity: (productId, quantity) => {
+        const newQuantity = Number.isFinite(quantity)
+          ? Math.floor(quantity)
+          : 0
+
+        set((state) => ({
+          items:
+            newQuantity <= 0
+              ? state.items.filter(
+                  (item) => item.productId !== productId
+                )
+              : state.items.map((item) =>
+                  item.productId === productId
+                    ? {
+                        ...item,
+                        quantity: newQuantity,
+                      }
+                    : item
+                ),
         }))
       },
+
+      // Empty the entire cart
       clear: () => set({ items: [] }),
     }),
+
     {
       name: 'rolex-store-cart',
+
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ items: state.items, selectedBranchId: state.selectedBranchId }),
+
+      partialize: (state) => ({
+        items: state.items,
+        selectedBranchId: state.selectedBranchId,
+      }),
+
+      // Restore only valid cart items
       merge: (persistedState, currentState) => {
-        const saved = isRecord(persistedState) ? persistedState : {}
+        const saved = (persistedState ?? {}) as Partial<CartState>
+
         return {
           ...currentState,
+
           items: Array.isArray(saved.items)
-            ? saved.items.filter(isValidCartItem).map((item) => ({
-              ...item,
-              product: {
-                ...item.product,
-                price: item.product.price !== null && dollarsToMinor(item.product.price) === null
-                  ? null
-                  : item.product.price,
-              },
-            }))
+            ? saved.items.filter(isValidCartItem)
             : [],
-          selectedBranchId: typeof saved.selectedBranchId === 'string' ? saved.selectedBranchId : null,
+
+          selectedBranchId:
+            typeof saved.selectedBranchId === 'string'
+              ? saved.selectedBranchId
+              : null,
         }
       },
-    },
-  ),
+    }
+  )
 )

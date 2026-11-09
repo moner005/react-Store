@@ -1,29 +1,67 @@
 
 import { Link } from 'react-router-dom'
+
 import { routes } from '@/constants/routes'
 import { useCartStore } from '@/stores/cartStore'
-import { formatUsd, dollarsToMinor } from '@/utils/money'
-import { countCartItems, lineTotalMinor, productSubtotal } from '@/utils/totals'
+
 import './Cart.css'
+
+const currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+})
+
+function formatPrice(price: number | null) {
+  return price === null
+    ? 'Price unavailable'
+    : currency.format(price)
+}
 
 export default function CartPage() {
   const items = useCartStore((state) => state.items)
+
   const updateQuantity = useCartStore(
     (state) => state.updateQuantity
   )
+
   const removeItem = useCartStore(
     (state) => state.removeItem
   )
-  const clear = useCartStore((state) => state.clear)
 
-  const totalQuantity = countCartItems(items)
-  const subtotal = productSubtotal(items)
-  const hasUnpricedItems = items.some((item) => dollarsToMinor(item.product.price ?? Number.NaN) === null)
+  const clear = useCartStore(
+    (state) => state.clear
+  )
+
+  // Calculate total quantity
+  const totalQuantity = items.reduce(
+    (total, item) => total + item.quantity,
+    0
+  )
+
+  // Calculate total price of products with known prices
+  const subtotal = items.reduce(
+    (total, item) => {
+      if (item.product.price === null) {
+        return total
+      }
+
+      return total + item.product.price * item.quantity
+    },
+    0
+  )
+
+  const hasUnpricedItems = items.some(
+    (item) => item.product.price === null
+  )
 
   return (
-    <section className="cart-page">
+    <main className="cart-page">
+
+      {/* PAGE HEADER */}
 
       <header className="cart-header">
+
         <div className="cart-eyebrow">
           ROLEX COLLECTION
         </div>
@@ -33,13 +71,18 @@ export default function CartPage() {
         <p>
           Review your selected timepieces and manage your collection.
         </p>
+
       </header>
+
+      {/* EMPTY CART */}
 
       {items.length === 0 ? (
 
         <section className="cart-empty">
 
-          <div className="cart-empty-icon">♛</div>
+          <div className="cart-empty-icon">
+            ♛
+          </div>
 
           <h2>Your Cart is Empty</h2>
 
@@ -61,60 +104,82 @@ export default function CartPage() {
 
         <div className="cart-layout">
 
+          {/* CART PRODUCTS */}
+
           <section className="cart-items-panel">
 
             <div className="cart-panel-heading">
+
               <h2>Selected Watches</h2>
-              <span>{totalQuantity ?? 'Unavailable'} Items</span>
+
+              <span>
+                {totalQuantity} Items
+              </span>
+
             </div>
 
             {items.map((item) => {
 
-              const lineTotal = lineTotalMinor(item)
+              const lineTotal =
+                item.product.price === null
+                  ? null
+                  : item.product.price * item.quantity
 
               return (
+
                 <article
                   className="cart-item"
                   key={item.productId}
                 >
 
+                  {/* PRODUCT IMAGE */}
+
                   <div className="cart-item-image">
 
                     {item.product.image ? (
+
                       <img
                         src={item.product.image}
                         alt={item.product.name}
                       />
+
                     ) : (
+
                       <span className="cart-image-placeholder">
                         ♛
                       </span>
+
                     )}
 
                   </div>
 
+                  {/* PRODUCT DETAILS */}
+
                   <div className="cart-item-info">
 
-                    <h3>{item.product.name}</h3>
+                    <h3>
+                      {item.product.name}
+                    </h3>
 
                     {item.product.referenceNumber && (
+
                       <p className="cart-reference">
                         Reference: {item.product.referenceNumber}
                       </p>
+
                     )}
 
                     <p className="cart-unit-price">
-                      {item.product.price === null || dollarsToMinor(item.product.price) === null
-                        ? 'Price unavailable'
-                        : formatUsd(dollarsToMinor(item.product.price)!)}
+                      {formatPrice(item.product.price)}
                     </p>
+
+                    {/* QUANTITY CONTROLS */}
 
                     <div className="cart-quantity">
 
                       <button
                         type="button"
                         aria-label={`Decrease quantity of ${item.product.name}`}
-                        disabled={item.quantity <= 1}
                         onClick={() =>
                           updateQuantity(
                             item.productId,
@@ -125,7 +190,9 @@ export default function CartPage() {
                         −
                       </button>
 
-                      <span>{item.quantity}</span>
+                      <span>
+                        {item.quantity}
+                      </span>
 
                       <button
                         type="button"
@@ -136,7 +203,6 @@ export default function CartPage() {
                             item.quantity + 1
                           )
                         }
-                        disabled={item.quantity >= Number.MAX_SAFE_INTEGER}
                       >
                         +
                       </button>
@@ -145,10 +211,12 @@ export default function CartPage() {
 
                   </div>
 
+                  {/* PRODUCT TOTAL AND REMOVE */}
+
                   <div className="cart-item-actions">
 
                     <strong className="cart-line-total">
-                      {lineTotal === null ? 'Price unavailable' : formatUsd(lineTotal)}
+                      {formatPrice(lineTotal)}
                     </strong>
 
                     <button
@@ -164,8 +232,11 @@ export default function CartPage() {
                   </div>
 
                 </article>
+
               )
             })}
+
+            {/* CART ACTIONS */}
 
             <div className="cart-bottom-actions">
 
@@ -188,6 +259,8 @@ export default function CartPage() {
 
           </section>
 
+          {/* ORDER SUMMARY */}
+
           <aside className="cart-summary">
 
             <p className="summary-eyebrow">
@@ -197,38 +270,58 @@ export default function CartPage() {
             <h2>Order Summary</h2>
 
             <div className="summary-row">
+
               <span>Total Items</span>
-              <strong>{totalQuantity ?? 'Unavailable'}</strong>
+
+              <strong>{totalQuantity}</strong>
+
             </div>
 
             <div className="summary-row">
+
               <span>Unique Watches</span>
+
               <strong>{items.length}</strong>
+
             </div>
 
             <div className="summary-row">
+
               <span>Subtotal</span>
-              <strong>{subtotal === null ? 'Unavailable' : formatUsd(subtotal)}</strong>
+
+              <strong>
+                {currency.format(subtotal)}
+              </strong>
+
             </div>
 
             <div className="summary-divider" />
 
             <div className="summary-total">
+
               <span>Known Price Total</span>
-              <strong>{subtotal === null ? 'Unavailable' : formatUsd(subtotal)}</strong>
+
+              <strong>
+                {currency.format(subtotal)}
+              </strong>
+
             </div>
 
             {hasUnpricedItems && (
+
               <div className="cart-notice">
-                Some watches have a missing or unsupported catalogue price.
-                The product subtotal is unavailable until all line prices are known.
+                Some watches do not have a price in the
+                catalogue. They are excluded from this subtotal.
               </div>
+
             )}
 
             <p className="summary-notice">
               This is a shopping cart estimate, not a confirmed
               order total. Shipping and taxes are not included.
             </p>
+
+            {/* SUMMARY BUTTONS */}
 
             <div className="cart-summary-actions">
 
@@ -245,26 +338,28 @@ export default function CartPage() {
               >
                 View Dashboard
               </Link>
-              <Link to={routes.checkOrder} className="cart-secondary-button">
-                Check your order
-              </Link>
 
             </div>
 
           </aside>
 
         </div>
+
       )}
 
+      {/* DASHBOARD LINK */}
+
       <div className="cart-dashboard-footer">
+
         <Link
           to={routes.dashboard}
           className="cart-dashboard-link"
         >
           Explore Store Dashboard →
         </Link>
+
       </div>
 
-    </section>
+    </main>
   )
 }
