@@ -1,3 +1,11 @@
+# Backup update — 12 November 2026
+
+Hala's `cart_dashboard/hala` branch through `d889122` was merged into the existing `backup` from `6ac21d3`. The dashboard now shows the live Dials catalog total, a collection breakdown and list for the loaded page, connection status, and refresh and retry controls. Sales, order and stock reporting remain pending.
+
+The integration retains the shared cart store, its successful-add return value, saved-cart validation, safe quantities, USD cent calculations, and the link from Cart to Check your order. These contracts preserve the storefront and order-review behavior alongside the new dashboard.
+
+Review corrected the dashboard table count to match the rendered rows, clears old counts when refresh fails, routes malformed catalog responses to retry, and hides the prior row count during loading. Local validation passed six client tests, three server HTTP tests, lint, typechecks and both builds. The production-preview browser pass covered catalog and demo branch filters, the cart and both order-review URLs, account and contact forms, the missing route, and ten routes at 360/820/1440 pixels. Dashboard checks covered a live refresh, pending state, failed and malformed responses, an empty result, retry and recovery. The isolated run observed no uncaught page errors or server write requests. Evidence is under ignored `tmp/backup-nov12` and `tmp/verify-backup-nov12.cjs`.
+
 # Backup update — 9 November 2026
 
 The local `backup` was brought forward to Hasan's published integration at `a9ecffb`, including `feature/auth-pages` through `887380b`. Ibrahim's `ibrahim-branches-api` at `599bb1f` merges cleanly into that version. The user requested publication to the existing `backup` for continued review, with approval still required before updating `main`.

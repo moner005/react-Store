@@ -18,6 +18,8 @@ The integrated client uses Vite's `/api` proxy to read `GET /v1/models?brand=rol
 
 The Branches page also uses this catalog read and assigns records alternately to Damascus and Latakia for demonstration. Location-specific stock awaits an API contract. Login and registration currently use a client-only localStorage service with demo users and sessions.
 
+The dashboard uses the same catalog read for its total, collection breakdown and status. Its collection counts describe the loaded page. Sales, orders and inventory figures await backend endpoints.
+
 ## Proposed, not implemented
 
 The frontend order-review and contact pages do not add API endpoints. Stock checks, authoritative pricing, order submission, and contact email delivery remain unavailable. The contact recipient will be supplied later; local form validation does not send a message.
