@@ -1,3 +1,53 @@
+# Tutorial checkout
+
+A populated cart offers Checkout in the order summary at every viewport width. At 900 px and below, the cart also offers Checkout near the top so shoppers can proceed without scrolling past the items. An empty cart offers a link back to Store.
+
+Both `/checkout` and `/check-order` let guests and signed-in shoppers change quantities, remove items, clear the selection, and confirm a product-only order in USD. A cart can contain watches from one branch. Switching branches with items in the cart requires explicit confirmation to clear them. Existing carts with an unknown branch retain their items for review until the shopper clears the cart and selects a branch.
+
+The latest receipt and emptied cart commit in one browser storage write under a shared Web Lock. Two tabs confirming the same cart revision receive the same confirmation ID. A stale review cannot clear a newer cart, and a failed write leaves the cart available for retry. This flow runs in the browser.
+
+Local Chrome verification on a 390 px viewport covered canceling and confirming a branch switch, rejecting an old switch prompt after a cart edit, and two simultaneous confirmation clicks returning the same receipt ID. It also covered receipt reload, cart clearing, a storage failure preserving the cart, and access to an earlier receipt while its unscoped cart is blocked from order placement.
+
+# Slim product catalog — 14 November 2026
+
+Products show their name, photo, USD price, and collection. MongoDB keeps the model identity and slug for links and warehouse receipts, the order position for branch browsing, and the Dials attribution link. The photo path is resolved from the slug when the API reads the model.
+
+The Python admin CLI removed obsolete product fields from all 4,025 records in each local database, `react_store` and `react_store_full_review`. The review database's three receipts lost only the duplicated reference number. Extended JSON backups are under `tmp/`. MongoDB verification confirmed the same IDs, prices, and receipt quantities. Seeding the reduced schema and Chrome checks for both branches, product details, cart pricing, dashboard, and warehouse passed.
+
+# MongoDB maintenance tool
+
+The Python CLI under `server/tools/` can inspect, export, and bulk edit documents in a named MongoDB database. Writes default to a dry run. Applying an update or delete requires an expected match count and a new Extended JSON backup file. The write checks the captured document again so it skips records that changed after the backup. Use the NestJS API for normal account and warehouse operations.
+
+Local integration against a disposable MongoDB database covered read and export commands, dry runs, expected-count and backup guards, acknowledged bulk inserts, partial failures, updates, deletes, and restoring documents with BSON IDs intact.
+
+# Store branch chooser
+
+The public Store at `/store` asks shoppers to choose Damascus or Latakia. The selected branch limits the demo catalog before category filtering and pagination. Product detail links preserve the branch, category, and page for the return trip. The legacy product and branch listings redirect to Store, and individual product links still work.
+
+MongoDB stores each model's branch and browsing classification. The first balanced split assigned 2,013 models to Damascus and 2,012 to Latakia in each local database. The Python admin CLI wrote only branch and gender fields. Its before-and-after exports confirmed that the other model fields and all warehouse receipts were preserved.
+
+Branch searches and filters apply to the full branch catalog before pagination. The storefront keeps search, collection, gender, price order, and page in the URL. Older browser carts keep their items and latest receipt and require a fresh selection because their watches may have moved to another branch.
+
+# Owner warehouse — 13 November 2026
+
+The owner dashboard links to the central warehouse. The page lists model balances and the latest 25 receipts. The owner can find a model by name or reference and receive a positive whole quantity. The API requires an owner session for each warehouse route. Stock begins at zero and reflects the sum of saved receipts. Retrying a receipt uses the original UUID and payload.
+
+Local tests with MongoDB verified owner access, rejection of admins and customers, quantity and catalog validation, and concurrent retries. Chrome verified the owner dashboard link, guest and admin access, and receipt recovery after a lost or malformed response. The warehouse currently supports receiving. Branch stock and transfers need their own implementation.
+
+# Catalog prices and collections — 13 November 2026
+
+The MongoDB seed adds a stable demo price in USD cents for each model without a price and a brief description built from its name, collection, and reference. Products can be filtered by collection before pagination. Catalog detail uses the saved price when adding the model to the cart. The resumable thumbnail importer downloads available Dials photos to the local folder served by NestJS. A model without an exact photo uses a placeholder.
+
+Local MongoDB and API verification covered all 4,025 names, prices, descriptions and collection memberships across 41 pages. All 4,024 available Dials photos were imported. Dials returned no photo for Submariner reference `116659SABR-0001`, whose detail page also links to an exact-reference retailer photo. Browser verification covered local photo rendering, collection filters and pagination, descriptions, and matching USD totals in order review.
+
+# Backend catalog — 12 November 2026
+
+The site rework starts with NestJS and MongoDB, both required by the user. The local `backend/nest-mongodb` branch starts from the reviewed `backup` at `1e392a5`.
+
+The existing Dials integration provided the reference data for the mock store catalog. All 41 Rolex result pages were captured, producing 4,025 models with unique IDs and slugs. The checked-in snapshot records its source endpoint and capture time. The explicit seed validates and imports it into MongoDB. The browser reads our API, and model links credit Dials. The snapshot leaves out images, prices, and stock. New upstream records require an intentional snapshot update and reseed.
+
+See [API contract](api-contract.md) and [local setup](../README.md) for the current behavior. Earlier Express, live Dials, and json-server references below describe historical work or proposals. Store pricing and availability, authentication, orders, and contact email still need their own backend contracts.
+
 # Backup update — 12 November 2026
 
 Hala's `cart_dashboard/hala` branch through `d889122` was merged into the existing `backup` from `6ac21d3`. The dashboard now shows the live Dials catalog total, a collection breakdown and list for the loaded page, connection status, and refresh and retry controls. Sales, order and stock reporting remain pending.

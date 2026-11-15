@@ -3,7 +3,8 @@ import type { ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
-const DASHBOARD_ROUTE = '/dashboard';
+import { hasStatus } from '@/services/api/accounts';
+import { routes } from '@/constants/routes';
 const REGISTER_ROUTE = '/register';
 
 
@@ -38,7 +39,7 @@ function validate(values: LoginValues): LoginErrors {
 export default function LoginPage() {
     const [values, setValues] = useState(initialValues);
     const [errors, setErrors] = useState<LoginErrors>({});
-    const [submitted, setSubmitted] = useState(false);
+    const [pending, setPending] = useState(false);
     const navigate = useNavigate();
     const login = useAuthStore((state) => state.login);
 
@@ -52,11 +53,11 @@ export default function LoginPage() {
             ...currentErrors,
             [name]: undefined,
         }));
-        setSubmitted(false);
     }
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (pending) return;
         const validationErrors = validate(values);
 
         if (Object.keys(validationErrors).length > 0) {
@@ -64,13 +65,20 @@ export default function LoginPage() {
             return;
         }
 
-        const isLoginSuccessful = login(values.email, values.password);
-        if (!isLoginSuccessful) {
-            setErrors({ password: 'Invalid email or password.' });
-            return;
+        setPending(true);
+        try {
+            const account = await login(values.email, values.password);
+            const destination = account.role === 'owner'
+                ? routes.dashboard
+                : account.role === 'admin' && account.branchId
+                    ? routes.branches + '/' + account.branchId
+                    : routes.home;
+            navigate(destination, { replace: true });
+        } catch (error) {
+            setErrors({ password: hasStatus(error, 401) ? 'Invalid email or password.' : 'Could not sign in. Try again.' });
+        } finally {
+            setPending(false);
         }
-        setErrors({});
-        navigate(DASHBOARD_ROUTE);
     }
 
     return (
@@ -92,17 +100,10 @@ export default function LoginPage() {
             <div className="absolute inset-0 z-0 bg-slate-950/50" aria-hidden="true" />
             <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/40 bg-white/20 p-6 shadow-2xl backdrop-blur-xl sm:p-10">
                 <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">Welcome back</p>
-                <h1 id="login-title" className="mb-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">Log in to React Store</h1>
+                <h1 id="login-title" className="mb-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">Log in to ROLX</h1>
                 <p className="mb-8 leading-7 text-white/85">
                     Sign in to manage your account and continue shopping.
                 </p>
-
-                {submitted ? (
-                    <div className="mb-6 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4 text-sm leading-6 text-amber-900" role="status">
-                        <strong className="block text-amber-950">Login details are valid.</strong>
-                        You will be signed in when the authentication service is connected.
-                    </div>
-                ) : null}
 
                 <form className="space-y-5" onSubmit={handleSubmit} noValidate>
                     <div className="space-y-2">
@@ -139,7 +140,7 @@ export default function LoginPage() {
                         ) : null}
                     </div>
 
-                    <button className="w-full rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-600/30" type="submit">Log in</button>
+                    <button className="w-full rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-600/30" type="submit" disabled={pending}>{pending ? 'Signing in…' : 'Log in'}</button>
                 </form>
 
                 <p className="mt-6 text-center text-sm text-white/85">

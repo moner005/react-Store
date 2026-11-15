@@ -1,6 +1,6 @@
 
 /* ==========================
-   ROLEX CART PAGE
+   ROLX CART PAGE
 ========================== */
 
 .cart-page {
@@ -303,6 +303,10 @@
   transform: translateY(-3px);
 }
 
+.cart-header .cart-header-checkout {
+  display: none;
+}
+
 .cart-secondary-button {
   color: var(--primary-color);
   border: 1px solid var(--border-color);
@@ -355,11 +359,6 @@
   line-height: 1.6;
 }
 
-.cart-dashboard-footer {
-  text-align: center;
-  margin-top: 30px;
-}
-
 /* ANIMATION */
 
 @keyframes cartEntrance {
@@ -377,6 +376,12 @@
 /* RESPONSIVE */
 
 @media (max-width: 900px) {
+  .cart-header .cart-header-checkout {
+    display: inline-flex;
+    min-width: 10rem;
+    margin-top: 16px;
+  }
+
   .cart-layout {
     grid-template-columns: 1fr;
   }

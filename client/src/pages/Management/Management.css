@@ -1,0 +1,63 @@
+.management-page {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 5vw, 2.5rem);
+  display: grid;
+  gap: 1.25rem;
+  color: var(--text-color);
+}
+
+.management-page h1,
+.management-page h2,
+.management-page h3 {
+  font-family: Georgia, serif;
+  margin: 0;
+}
+
+.management-page h1 { font-size: clamp(1.75rem, 4vw, 2.75rem); }
+.management-page h2 { font-size: 1.4rem; }
+.management-page h3 { font-size: 1.15rem; }
+.management-page header p { color: var(--muted-color); }
+.management-page .management-eyebrow { display: none; }
+
+.management-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+
+.management-card,
+.management-form {
+  display: grid;
+  gap: 0.85rem;
+  padding: clamp(1rem, 4vw, 1.5rem);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--surface-color);
+}
+
+.management-page label { display: grid; gap: 0.3rem; font-weight: 600; }
+.management-page input,
+.management-page select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--muted-color);
+  border-radius: 0.3rem;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+.management-page button {
+  justify-self: start;
+  padding: 0.6rem 1rem;
+  border-radius: 0.3rem;
+  background: #006039;
+  color: #fff;
+  cursor: pointer;
+}
+
+.management-page button:disabled { opacity: 0.65; cursor: wait; }
+.management-page a { text-decoration: underline; text-underline-offset: 0.2em; }
+.management-links { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; }
+.management-page [role="alert"], .management-page [role="status"] { overflow-wrap: anywhere; }

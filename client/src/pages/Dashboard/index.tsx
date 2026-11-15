@@ -2,8 +2,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { getRolexWatches, type Watch, type WatchesResponse } from '@/data/Products'
+import { WatchPhoto } from '@/components/common/WatchPhoto'
+import { getRolexWatches, type Watch, type WatchesResponse } from '@/services/api/products'
 import { routes } from '@/constants/routes'
+import { storeName } from '@/constants/brand'
 import './Dashboard.css'
 
 const EMPTY_WATCHES: Watch[] = []
@@ -16,11 +18,10 @@ function requiredText(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null
 }
 
-function safeRelation(value: unknown, fallbackName: string): Watch['brand'] {
-  if (!isRecord(value)) return { id: '', name: fallbackName, slug: '' }
+function safeRelation(value: unknown): Watch['series'] {
+  if (!isRecord(value)) return { name: 'Unclassified', slug: '' }
   return {
-    id: requiredText(value.id) ?? '',
-    name: requiredText(value.name) ?? fallbackName,
+    name: requiredText(value.name) ?? 'Unclassified',
     slug: requiredText(value.slug) ?? '',
   }
 }
@@ -42,9 +43,13 @@ function normalizeWatch(value: unknown, index: number): Watch {
     name,
     slug,
     thumbnailUrl: typeof value.thumbnailUrl === 'string' ? value.thumbnailUrl : '',
-    referenceNumber: typeof value.referenceNumber === 'string' ? value.referenceNumber : '',
-    brand: safeRelation(value.brand, 'Rolex'),
-    series: safeRelation(value.series, 'Unclassified'),
+    series: safeRelation(value.series),
+    sourceUrl: typeof value.sourceUrl === 'string' && value.sourceUrl.startsWith('https://dials.co/watches/rolex/')
+      ? value.sourceUrl
+      : '',
+    priceCents: typeof value.priceCents === 'number' ? value.priceCents : 0,
+    branchId: value.branchId === 'latakia' ? 'latakia' : 'damascus',
+    gender: value.gender === 'men' || value.gender === 'women' ? value.gender : 'unisex',
   }
 }
 
@@ -144,7 +149,7 @@ function DashboardPage() {
 
   const stats = [
     {
-      label: 'TOTAL ROLEX MODELS',
+      label: 'TOTAL MODELS',
       value: loading
         ? '...'
         : error
@@ -201,7 +206,7 @@ function DashboardPage() {
 
         <div>
           <p className="admin-eyebrow">
-            ROLEX STORE MANAGEMENT
+            {storeName} STORE MANAGEMENT
           </p>
 
           <h1>Store Dashboard</h1>
@@ -224,7 +229,7 @@ function DashboardPage() {
           </button>
 
           <Link
-            to={routes.products}
+            to={routes.store}
             className="admin-primary-button"
           >
             View Catalogue →
@@ -430,7 +435,7 @@ function DashboardPage() {
               <strong>Product Catalogue</strong>
 
               <span>
-                External catalogue API
+                Store catalogue API
               </span>
 
             </div>
@@ -454,50 +459,16 @@ function DashboardPage() {
           <div className="admin-operation-item">
 
             <div className="admin-operation-icon">
-              ◷
-            </div>
-
-            <div className="admin-operation-info">
-
-              <strong>Sales & Orders</strong>
-
-              <span>
-                Order management API
-              </span>
-
-            </div>
-
-            <span className="admin-status pending">
-              Not connected
-            </span>
-
-          </div>
-
-          <div className="admin-operation-item">
-
-            <div className="admin-operation-icon">
               ◈
             </div>
 
             <div className="admin-operation-info">
 
-              <strong>Inventory</strong>
-
-              <span>
-                Stock management API
-              </span>
+              <strong>Warehouse</strong>
+              <Link className="admin-details-link" to={routes.warehouse}>Stock and receipts →</Link>
 
             </div>
 
-            <span className="admin-status pending">
-              Not connected
-            </span>
-
-          </div>
-
-          <div className="admin-operation-notice">
-            Sales, orders and inventory statistics will become
-            available after connecting the store backend.
           </div>
 
         </article>
@@ -519,7 +490,7 @@ function DashboardPage() {
           </div>
 
           <Link
-            to={routes.products}
+            to={routes.store}
             className="admin-text-link"
           >
             View All Products →
@@ -530,7 +501,7 @@ function DashboardPage() {
         {loading ? (
 
           <div className="admin-state-message">
-            Loading Rolex catalogue...
+            Loading watches…
           </div>
 
         ) : error ? (
@@ -555,8 +526,6 @@ function DashboardPage() {
                 <tr>
                   <th>WATCH</th>
                   <th>COLLECTION</th>
-                  <th>REFERENCE</th>
-                  <th>BRAND</th>
                   <th>DETAILS</th>
                 </tr>
               </thead>
@@ -571,15 +540,7 @@ function DashboardPage() {
 
                       <div className="admin-watch-cell">
 
-                        {watch.thumbnailUrl ? (
-                          <img
-                            src={watch.thumbnailUrl}
-                            alt={watch.name}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <span aria-hidden="true">♛</span>
-                        )}
+                        <WatchPhoto path={watch.thumbnailUrl} name={watch.name} className="admin-watch-photo" />
 
                         <strong>{watch.name}</strong>
 
@@ -592,14 +553,6 @@ function DashboardPage() {
                     </td>
 
                     <td>
-                      {watch.referenceNumber || '—'}
-                    </td>
-
-                    <td>
-                      {watch.brand?.name || 'Rolex'}
-                    </td>
-
-                    <td>
 
                       <Link
                         to={`/products/${watch.slug}`}
@@ -607,6 +560,7 @@ function DashboardPage() {
                       >
                         View →
                       </Link>
+                      {watch.sourceUrl && <a className="catalog-source" href={watch.sourceUrl} target="_blank" rel="noreferrer">Source: Dials</a>}
 
                     </td>
 
@@ -643,7 +597,7 @@ function DashboardPage() {
       {/* DASHBOARD FOOTNOTE */}
 
       <footer className="admin-dashboard-footer">
-        Catalogue information is provided by the existing Dials API.
+        Catalogue information comes from our saved Dials reference data.
 
       </footer>
 

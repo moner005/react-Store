@@ -7,3 +7,4 @@ coverage/
 *.tsbuildinfo
 graphify-out-local/
 tmp/
+server/assets/catalog/rolex/

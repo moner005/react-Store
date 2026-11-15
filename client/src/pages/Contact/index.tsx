@@ -7,6 +7,8 @@ type FieldName = keyof Fields
 const empty: Fields = { name: '', email: '', subject: '', message: '' }
 const fieldNames: FieldName[] = ['name', 'email', 'subject', 'message']
 const labels: Record<FieldName, string> = { name: 'Name', email: 'Email', subject: 'Subject', message: 'Message' }
+const contactEmail = 'rolex.syria@gmail.com'
+const emailLink = 'mailto:' + contactEmail
 
 const channels = [
   {
@@ -26,7 +28,7 @@ const channels = [
 export default function ContactPage() {
   const [fields, setFields] = useState<Fields>(empty)
   const [errors, setErrors] = useState<Partial<Fields>>({})
-  const [notice, setNotice] = useState('')
+  const [emailDraft, setEmailDraft] = useState('')
   const inputs = useRef<Record<FieldName, HTMLInputElement | HTMLTextAreaElement | null>>({
     name: null, email: null, subject: null, message: null,
   })
@@ -40,17 +42,18 @@ export default function ContactPage() {
     if (!fields.message.trim()) next.message = 'Enter a message.'
     setErrors(next)
     if (Object.keys(next).length) {
-      setNotice('')
+      setEmailDraft('')
       const firstInvalid = fieldNames.find((field) => next[field])
       if (firstInvalid) inputs.current[firstInvalid]?.focus()
       return
     }
-    setNotice('Email address will be added soon. Your message has not been sent.')
+    const body = `${fields.message.trim()}\r\n\r\n${fields.name.trim()}\r\n${fields.email.trim()}`
+    setEmailDraft(`${emailLink}?subject=${encodeURIComponent(fields.subject.trim())}&body=${encodeURIComponent(body)}`)
   }
 
   function update(field: FieldName, value: string) {
     setFields((current) => ({ ...current, [field]: value }))
-    setNotice('')
+    setEmailDraft('')
   }
 
   return (
@@ -62,11 +65,8 @@ export default function ContactPage() {
       </section>
       <div className="contact-grid">
         <section className="contact-form-panel">
-          <h2>Contact this project</h2>
-          <div className="contact-coming" role="note">
-            <strong>Email sending coming soon</strong>
-            <span>This form is a preview. Your message will not be sent.</span>
-          </div>
+          <h2>Contact the store</h2>
+          <a className="contact-email" href={emailLink}>{contactEmail}</a>
           <form onSubmit={submit} noValidate>
             {fieldNames.map((field) => {
               const isMessage = field === 'message'
@@ -82,35 +82,34 @@ export default function ContactPage() {
                 ref: (element: HTMLInputElement | HTMLTextAreaElement | null) => { inputs.current[field] = element },
               }
               return (
-                <label className="contact-field" htmlFor={field} key={field}>
-                  {labels[field]}
+                <div className="contact-field" key={field}>
+                  <label htmlFor={field}>{labels[field]}</label>
                   {isMessage
                     ? <textarea {...common} rows={5} />
                     : <input {...common} type={field === 'email' ? 'email' : 'text'} autoComplete={field === 'name' ? 'name' : field === 'email' ? 'email' : 'off'} />}
                   {errors[field] && <span className="field-error" id={errorId}>{errors[field]}</span>}
-                </label>
+                </div>
               )
             })}
-            <button className="contact-submit" type="submit">Prepare message</button>
-            {notice && <p className="contact-result" role="status">{notice}</p>}
+            <button className="contact-submit" type="submit">Prepare email</button>
+            <div aria-live="polite">
+              {emailDraft && <a className="contact-result" href={emailDraft}>Open email draft</a>}
+            </div>
           </form>
         </section>
         <aside className="official-panel">
-          <p className="eyebrow">Official Rolex channels</p>
-          <h2>Discover more</h2>
-          <p>For information about Rolex products and boutiques, visit the official website.</p>
-          <a className="official-link" href="https://www.rolex.com/" target="_blank" rel="noreferrer">Official website ↗</a>
+          <h2>External links</h2>
+          <a className="official-link" href="https://www.rolex.com/" target="_blank" rel="noreferrer">Manufacturer website ↗</a>
           <a className="official-link" href="https://www.rolex.com/store-locator" target="_blank" rel="noreferrer">Find a boutique ↗</a>
-          <div className="contact-socials" aria-label="Official social media">
+          <div className="contact-socials" aria-label="External social media">
             {channels.map((channel) => (
-              <a key={channel.label} href={channel.href} aria-label={`Rolex on ${channel.label}`} title={channel.label} target="_blank" rel="noreferrer">
+              <a key={channel.label} href={channel.href} aria-label={channel.label + ' (external)'} title={channel.label} target="_blank" rel="noreferrer">
                 <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   {channel.icon}
                 </svg>
               </a>
             ))}
           </div>
-          <small>External links open the official Rolex website or social channels.</small>
         </aside>
       </div>
     </div>

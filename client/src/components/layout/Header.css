@@ -1,6 +1,10 @@
+:root {
+  --header-min-height: 78px;
+}
+
 .header {
   width: 100%;
-  min-height: 78px;
+  min-height: var(--header-min-height);
   padding: 0 6%;
 
   background-color: var(--shell-color);
@@ -14,7 +18,7 @@
   position: relative;
   z-index: 10;
 
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 28%, transparent);
 
   transition: background-color 0.3s ease;
 }
@@ -47,100 +51,134 @@
 }
 
 .nav-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
   color: #E2E0DB;
-
+  border-bottom: 1px solid transparent;
   text-decoration: none;
-  font-size: 15px;
-  padding: 12px 0;
-
   transition: color 0.3s ease;
 }
 
+.nav-links svg,
+.header-icons svg {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+}
+
 .nav-links a:hover,
+.nav-links a:focus-visible,
 .nav-links a.active {
   color: var(--accent-color);
 }
 
 .nav-links a.active {
-  border-bottom: 1px solid var(--accent-color);
+  border-bottom-color: var(--accent-color);
 }
 .header-icons {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 6px;
 }
 
-.header-icons button {
-  background: none;
-  border: none;
-
-  color: #E2E0DB;
-
-  font-size: 25px;
-  cursor: pointer;
+.header-icons > :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  padding: 4px;
-
-  transition: color 0.3s ease;
-}
-
-.header-icons .account-button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
   color: #E2E0DB;
-  font-size: 25px;
-  line-height: 1;
-  padding: 4px;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-.header-icons .account-button:hover { color: var(--accent-color); }
-
-.header-icons button:hover {
+.header-icons .theme-toggle,
+.header-icons > :is(a, button):hover,
+.header-icons > :is(a, button):focus-visible {
   color: var(--accent-color);
+}
+
+.header-icons > :is(a, button):hover {
+  background-color: color-mix(in srgb, var(--accent-color) 12%, transparent);
 }
 
 .cart-count {
   position: absolute;
-  top: -4px;
-  right: -7px;
+  top: 1px;
+  right: 0;
 
   background-color: var(--accent-color);
   color: #111111;
 
   font-size: 10px;
-  width: 17px;
+  min-width: 17px;
   height: 17px;
-  border-radius: 50%;
+  padding-inline: 3px;
+  border-radius: 9px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 }
+.menu-toggle {
+  display: none;
+}
+
 @media (max-width: 1024px) {
+  :root {
+    --header-min-height: 64px;
+  }
+
   .header {
-    padding: 15px 4%;
-    flex-wrap: wrap;
-    gap: 12px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    padding: 8px 4%;
+    gap: 0 8px;
   }
 
-  .nav-links {
-    order: 3;
-    width: 100%;
+  .header .logo {
+    justify-self: start;
+  }
+
+  .header .menu-toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent-color);
+  }
+
+  .menu-toggle svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .header .nav-links {
+    display: none;
+    grid-row: 2;
+    grid-column: 1 / -1;
+    margin-top: 8px;
+    border-top: 1px solid #47433a;
+    gap: 0;
+  }
+
+  .header .nav-links.is-open {
+    display: flex;
     justify-content: center;
-    gap: clamp(10px, 3vw, 20px);
-    flex-wrap: wrap;
-  }
-
-  .nav-links a {
-    font-size: 13px;
+    gap: 8px;
   }
 
   .header-icons {
-    gap: 12px;
+    gap: 2px;
   }
-}
-
-@media (max-width: 420px) {
-  .header { justify-content: space-between; }
-  .nav-links { justify-content: flex-start; column-gap: 14px; }
-  .header-icons { gap: 8px; }
-  .header-icons button { font-size: 21px; }
 }

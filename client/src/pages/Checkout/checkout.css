@@ -34,6 +34,10 @@
 .review-total { border-bottom: 0; border-top: 1px solid var(--accent-color); font-weight: 700; }
 .review-summary-note { display: block !important; color: var(--muted-color); line-height: 1.55; }
 .review-button { display: inline-flex; justify-content: center; background: var(--primary-color); color: white; padding: .8rem 1rem; margin-top: .6rem; font-weight: 600; }
+.review-summary button.review-button { width:100%; border:0; font:inherit; font-weight:600; cursor:pointer; }
+.review-summary button.review-button:disabled { opacity:.55; cursor:not-allowed; }
+.review-secondary { background:transparent; color:var(--primary-color); border:1px solid var(--primary-color); }
+.review-error { padding:.8rem 1rem; color:#812020; background:#fff; border-left:3px solid #9f2828; }
 .review-empty { padding: 2rem 0; }
 .review-empty p { color: var(--muted-color); line-height: 1.6; }
 

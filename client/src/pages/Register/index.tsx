@@ -1,4 +1,4 @@
-import { registerUser } from '@/services/authStorage';
+import { hasStatus, registerUser } from '@/services/api/accounts';
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -52,6 +52,7 @@ export default function RegisterPage() {
     const [values, setValues] = useState(initialValues);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [errors, setErrors] = useState<RegistrationErrors>({});
+    const [pending, setPending] = useState(false);
     const navigate = useNavigate();
 
     function handleChange({
@@ -68,8 +69,9 @@ export default function RegisterPage() {
         }));
     }
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (pending) return;
         const validationErrors = validate(values, acceptedTerms);
         
         if (Object.keys(validationErrors).length > 0) {
@@ -77,13 +79,15 @@ export default function RegisterPage() {
             return;
         }
         
-        const saveResult = registerUser({ name: values.name.trim(), email: values.email, password: values.password });
-        if (!saveResult.ok) {
-            setErrors({ email: saveResult.message });
-            return;
+        setPending(true);
+        try {
+            await registerUser({ name: values.name.trim(), email: values.email, password: values.password });
+            navigate(routes.login);
+        } catch (error) {
+            setErrors({ email: hasStatus(error, 409) ? 'An account already uses this email address.' : 'Could not create your account. Try again.' });
+        } finally {
+            setPending(false);
         }
-        setErrors({});
-        navigate(routes.login);
     }
 
     return (
@@ -105,7 +109,7 @@ export default function RegisterPage() {
             <div className="absolute inset-0 z-0 bg-slate-950/50" aria-hidden="true" />
             <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/40 bg-white/20 p-4 shadow-2xl backdrop-blur-xl sm:p-5">
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">Create your account</p>
-                <h1 id="register-title" className="mb-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Join React Store</h1>
+                <h1 id="register-title" className="mb-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Join ROLX</h1>
                 <p className="mb-3 leading-6 text-white/85">
                     Register to save your details and make shopping easier.
                 </p>
@@ -196,7 +200,7 @@ export default function RegisterPage() {
                         {errors.terms ? <p className="text-sm text-red-400" id="register-terms-error" role="alert">{errors.terms}</p> : null}
                     </div>
 
-                    <button className="w-full rounded-lg bg-emerald-700 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-600/30" type="submit">Create account</button>
+                    <button className="w-full rounded-lg bg-emerald-700 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-600/30" type="submit" disabled={pending}>{pending ? 'Creating account…' : 'Create account'}</button>
                 </form>
 
                 <p className="mt-3 text-center text-sm text-white/85">

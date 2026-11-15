@@ -1,42 +1,18 @@
 import "@/pages/Home/index.css";
 import heroVideo from "@/assets/videos/homevideo.mp4";
-import watch1 from "@/assets/images/watch-1.jpg";
-import watch2 from "@/assets/images/watch-2.jpg";
-import watch3 from "@/assets/images/watch-3.jpg";
-import toast from "react-hot-toast";
-import watch4 from "@/assets/images/watch-4.jpg";
 import { Link } from "react-router-dom";
 import { routes } from "@/constants/routes";
-import { useCartStore } from "@/stores/cartStore";
+import { storeName } from "@/constants/brand";
+import { useQuery } from "@tanstack/react-query";
+import { WatchPhoto } from "@/components/common/WatchPhoto";
+import { getRolexWatches } from "@/services/api/products";
+import { formatUsd } from "@/utils/money";
 
 function Index() {
-  const addItem = useCartStore((state) => state.addItem);
-  const products = [
-    {
-      id: 1,
-      name: "Submariner",
-      price: "14,800",
-      image: watch2,
-    },
-    {
-      id: 2,
-      name: "Datejust 41",
-      price: "12,500",
-      image: watch1,
-    },
-    {
-      id: 3,
-      name: "Oyster Perpetual",
-      price: "8,900",
-      image: watch3,
-    },
-    {
-      id: 4,
-      name: "Daytona",
-      price: "16,900",
-      image: watch4,
-    },
-  ];
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['home-featured-watches'],
+    queryFn: ({ signal }) => getRolexWatches(1, signal),
+  });
 
   return (
     <div className="home-content">
@@ -51,7 +27,7 @@ function Index() {
         <div className="hero-content">
           <p className="hero-subtitle">TIMELESS ELEGANCE</p>
           <h1>
-            ROLEX
+            {storeName}
             <br />
             <span>THE ART OF PRECISION</span>
           </h1>
@@ -62,7 +38,7 @@ function Index() {
             crafted for generations.
           </p>
 
-          <Link to={routes.products} className="shop-button">
+          <Link to={routes.store} className="shop-button">
             {" "}
             SHOP NOW <span>→</span>
           </Link>
@@ -117,41 +93,23 @@ function Index() {
 
           <div className="heading-line"></div>
 
-          <Link to={routes.products} className="view-all">
+          <Link to={routes.store} className="view-all">
             {" "}
             View All <span>→</span>
           </Link>
         </div>
 
+        {isLoading && <p role="status">Loading featured watches…</p>}
+        {isError && <p role="alert">Featured watches are unavailable right now.</p>}
+        {!isLoading && !isError && (data?.data.length ?? 0) === 0 && <p>No watches are available right now.</p>}
         <div className="products-grid">
-          {products.map((product) => (
+          {(data?.data ?? []).slice(0, 4).map((product) => (
             <article className="product-card" key={product.id}>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-image"
-              />
-
+              <WatchPhoto path={product.thumbnailUrl} name={product.name} className="product-image" />
+              <p className="product-series">{product.series.name}</p>
               <h3>{product.name}</h3>
-
-              <p className="product-price">${product.price}</p>
-
-              <button
-                className="add-to-cart"
-                onClick={() => {
-                  const accepted = addItem({
-                    id: product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                    name: product.name,
-                    price: Number(product.price.replace(/,/g, "")),
-                    image: product.image,
-                  });
-
-                  if (accepted) toast.success(`${product.name} added successfully!`);
-                  else toast.error("This item could not be added to the cart.");
-                }}
-              >
-                <span>🛒</span> Add to Cart
-              </button>
+              <p className="product-price">{formatUsd(product.priceCents)}</p>
+              <Link className="add-to-cart" to={`/products/${product.slug}?branch=${product.branchId}`}>View Details</Link>
             </article>
           ))}
         </div>

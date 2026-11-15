@@ -1,19 +1,23 @@
-import { app } from './app.js'
-import { config } from './config/env.js'
+import 'dotenv/config'
+import { createApp } from './app.js'
+import { loadConfig } from './config/app-config.js'
 
-const server = app.listen(config.port, () => {
-  process.stdout.write(`React Store API listening on port ${config.port}\n`)
-})
+const config = loadConfig()
+const app = await createApp(config)
+await app.listen(config.port, config.host)
+process.stdout.write(`React Store API listening on ${config.host}:${config.port}\n`)
 
-function shutdown(signal: NodeJS.Signals): void {
-  process.stdout.write(`\n${signal}: closing server\n`)
-  server.close((error) => {
-    if (error) {
-      process.stderr.write(`${error.message}\n`)
-      process.exitCode = 1
-    }
-  })
+let closing = false
+async function shutdown(signal: NodeJS.Signals): Promise<void> {
+  if (closing) return
+  closing = true
+  process.stdout.write(`${signal}: closing server\n`)
+  try {
+    await app.close()
+  } catch {
+    process.exitCode = 1
+  }
 }
 
-process.once('SIGINT', shutdown)
-process.once('SIGTERM', shutdown)
+process.once('SIGINT', () => { void shutdown('SIGINT') })
+process.once('SIGTERM', () => { void shutdown('SIGTERM') })

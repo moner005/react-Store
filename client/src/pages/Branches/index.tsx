@@ -1,145 +1,60 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getRolexWatches, type Watch } from "@/data/Products";
-import "./Branches.css";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { routes, storeBranches } from '@/constants/routes'
+import { getPublicBranches } from '@/services/api/accounts'
+import { useCartStore } from '@/stores/cartStore'
+import '@/pages/Products/index.css'
 
-type City = "Damascus" | "Latakia";
-
-function Branches() {
-  const [selectedCity, setSelectedCity] = useState<"All" | City>("All");
-  const [watches, setWatches] = useState<Watch[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    async function loadWatches() {
-      try {
-        const result = await getRolexWatches();
-        setWatches(result.data);
-      } catch (err) {
-        console.error(err);
-        setError("Something went wrong. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadWatches();
-  }, []);
-
-  // توزيع تجريبي للساعات بالتناوب بين الفرعين
-  const watchesWithBranch = watches.map((watch, index) => ({
-    ...watch,
-    city: index % 2 === 0 ? "Damascus" as City : "Latakia" as City,
-  }));
-
-  const filteredWatches =
-    selectedCity === "All"
-      ? watchesWithBranch
-      : watchesWithBranch.filter(
-          (watch) => watch.city === selectedCity
-        );
-
-  if (loading) {
-    return <p className="products-message">Loading watches...</p>;
-  }
-
-  if (error) {
-    return <p className="products-message">{error}</p>;
-  }
-
+export default function Branches() {
+  const navigate = useNavigate()
+  const items = useCartStore((state) => state.items)
+  const selectedBranch = useCartStore((state) => state.selectedBranchId)
+  const revision = useCartStore((state) => state.revision)
+  const switchBranch = useCartStore((state) => state.switchBranch)
+  const [pendingBranch, setPendingBranch] = useState<{ branchId: 'damascus' | 'latakia'; revision: string } | null>(null)
+  const [error, setError] = useState('')
+  const { data, isLoading } = useQuery({
+    queryKey: ['public-branches'],
+    queryFn: ({ signal }) => getPublicBranches(signal),
+  })
   return (
-    <section className="branches-page" dir="ltr">
-      <section className="products-banner">
-        <p className="products-subtitle">
-          DISCOVER OUR COLLECTION
-        </p>
-
-        <h1>Luxury Watches</h1>
-
-        <p>
-          Discover our exclusive collection of luxury watches,
-          carefully selected to match your style.
-        </p>
-        <p className="branch-demo-note">
-          Catalog watches are assigned to Damascus and Latakia for this demonstration.
-          Branch stock and availability have not been checked.
-        </p>
-      </section>
-
-      <section className="products-section">
-        <div className="products-heading">
-          <h2>Our Watches</h2>
-
-          <div className="heading-line" />
-
-          <span className="products-count">
-            {filteredWatches.length} Products
-          </span>
-        </div>
-
-        <div className="products-filters">
-          <span>Filter by branch:</span>
-
-          {(["All", "Damascus", "Latakia"] as const).map((city) => (
-            <button
-              key={city}
-              type="button"
-              aria-pressed={selectedCity === city}
-              className={`filter-button ${
-                selectedCity === city ? "active" : ""
-              }`}
-              onClick={() => setSelectedCity(city)}
-            >
-              {city}
-            </button>
-          ))}
-        </div>
-
-        <div className="products-grid">
-          {filteredWatches.map((watch) => (
-            <article className="product-card" key={watch.id}>
-              <div className="product-image-wrapper">
-                <img
-                  src={watch.thumbnailUrl}
-                  alt={watch.name}
-                  className="product-image"
-                  loading="lazy"
-                />
-
-                <span className="product-city">
-                  {watch.city}
-                </span>
-              </div>
-
-              <p className="product-category">
-                {watch.series?.name ?? "Rolex Collection"}
-              </p>
-
-              <h3>{watch.name}</h3>
-
-              <p className="product-reference">
-                Reference: {watch.referenceNumber || "Not available"}
-              </p>
-
-              <Link
-                className="details-button"
-                to={`/products/${watch.slug}`}
-              >
-                View Details <span>→</span>
-              </Link>
-            </article>
-          ))}
-        </div>
-
-        {filteredWatches.length === 0 && (
-          <p className="no-products">
-            No products available in this branch.
-          </p>
-        )}
-      </section>
+    <section className="store-chooser">
+      <header>
+        <h1>Store</h1>
+        <p>Choose a branch to browse its watches.</p>
+      </header>
+      <nav className="store-branches" aria-label="Choose a store branch">
+        {Object.entries(storeBranches).map(([id, name]) => {
+          const branch = data?.find((item) => item.id === id)
+          const phone = branch?.phone?.trim()
+          const hasPhone = Boolean(phone && /[1-9]/.test(phone))
+          const branchId = id as 'damascus' | 'latakia'
+          return <Link className="store-branch" key={id} to={`${routes.store}/${id}`} onClick={(event) => {
+            if (selectedBranch === branchId || items.length === 0) return
+            event.preventDefault()
+            setPendingBranch({ branchId, revision })
+            setError('')
+          }}>
+            <strong>{name}</strong>
+            {isLoading ? <span>Loading branch details…</span> : branch?.address ? <span>{branch.address}</span> : null}
+            {hasPhone && <span>{phone}</span>}
+            {branch?.openingHours && <span>Hours · {branch.openingHours}</span>}
+          </Link>
+        })}
+      </nav>
+      {pendingBranch && <div className="store-branch-confirm" role="group" aria-label="Confirm branch switch">
+        <p>Switching branch clears the current cart.</p>
+        <button className="review-button" type="button" onClick={() => {
+          void switchBranch(pendingBranch.branchId, pendingBranch.revision).then((result) => {
+            if (result.ok) navigate(routes.store + '/' + pendingBranch.branchId)
+            else setError(result.reason === 'stale' ? 'Your cart changed in another tab. Nothing was cleared; choose the branch again.' : 'The cart could not be saved. Nothing was cleared; try again.')
+            setPendingBranch(null)
+          })
+        }}>Clear cart and switch</button>
+        <button className="review-button review-secondary" type="button" onClick={() => setPendingBranch(null)}>Cancel</button>
+      </div>}
+      {error && <p role="alert">{error}</p>}
     </section>
-  );
+  )
 }
-
-export default Branches;

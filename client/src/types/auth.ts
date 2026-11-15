@@ -1,10 +1,11 @@
-export interface User {
-    id: string,
-    name: string,
-    email: string,
-    password: string,
-    // role: 'user' | 'admin',
-    // token: string
-}
+export type Role = 'owner' | 'admin' | 'user'
+export type BranchId = 'damascus' | 'latakia'
 
-export type SessionUser = Omit<User, 'password'>
+export interface SessionUser {
+  id: string
+  name: string
+  email: string
+  role: Role
+  branchId: BranchId | null
+  active: boolean
+}
