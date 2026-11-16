@@ -6,6 +6,10 @@ import { randomUUID } from 'node:crypto'
 
 const source = 'https://images.dials.co'
 const maxImageBytes = 4 * 1024 * 1024
+const photoRequestTimeoutMs = Number(process.env.PHOTO_REQUEST_TIMEOUT_MS ?? '12000')
+if (!Number.isSafeInteger(photoRequestTimeoutMs) || photoRequestTimeoutMs < 1_000 || photoRequestTimeoutMs > 600_000) {
+  throw new Error('PHOTO_REQUEST_TIMEOUT_MS must be an integer from 1000 to 600000.')
+}
 const pngSignature = Buffer.from('89504e470d0a1a0a', 'hex')
 const modelSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const photoPath = /^\/rolex\/[a-z0-9-]+\/[a-z0-9-]+\.png$/
@@ -33,7 +37,7 @@ async function download(path) {
   const startAt = Math.max(nextStart, Date.now())
   nextStart = startAt + 125
   await delay(Math.max(0, startAt - Date.now()))
-  const response = await fetch(source + path, { redirect: 'error', signal: AbortSignal.timeout(12_000) })
+  const response = await fetch(source + path, { redirect: 'error', signal: AbortSignal.timeout(photoRequestTimeoutMs) })
   if (!response.ok || response.headers.get('content-type')?.split(';')[0] !== 'image/png' || !response.body) {
     await response.body?.cancel()
     throw new Error('Source did not return a PNG.')

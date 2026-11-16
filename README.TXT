@@ -6,6 +6,42 @@ Damascus and Latakia catalogs, name search, collection and gender filters,
 USD price sorting, cart, checkout, and contact. Staff tools cover branch
 settings, administrator accounts, and central warehouse receipts.
 
+0. Quick start on Windows
+-------------------------
+
+On GitHub, choose Code, then Download ZIP. Extract the entire archive
+and double-click START.exe beside this README. Running from a Git clone
+also works. Start Docker Desktop first and have Node.js and its bundled
+npm on PATH. The launcher reports anything missing and shows installation
+links. Python is only needed for the optional database admin tool.
+
+START.exe shows progress by setup stage. It installs both packages
+from their lockfiles, starts local MongoDB, builds the API and seeds the
+catalog, imports photos, then starts the API and website. It allows extra
+time and retries for slow downloads. The full photo import can take
+several minutes. A 100% status means the website is ready at
+http://localhost:5173. Leave the launcher open while you use the site,
+then press Ctrl+C to stop the frontend and API. MongoDB keeps its data
+and can be stopped separately with docker compose stop mongo.
+
+For a quick run from the repository folder in PowerShell:
+
+  .\START.exe --skip-photos
+
+For a run that leaves the browser closed:
+
+  .\START.exe --no-browser
+
+The launcher uses the default local addresses below. Follow the manual
+instructions for a custom API, frontend origin, or remote MongoDB.
+Setup logs are saved under %LOCALAPPDATA%\ROLX-Store\logs. To rebuild
+the executable from source on Windows, run the following from the root:
+
+  powershell -NoProfile -ExecutionPolicy Bypass -File tools/start/Build-Start.ps1
+
+The build uses the Windows .NET Framework C# compiler. Typical use
+starts with the prebuilt START.exe included in the project.
+
 1. Prerequisites
 ----------------
 

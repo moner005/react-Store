@@ -1,6 +1,8 @@
 # ROLX
 
 See [README.TXT](README.TXT) for a complete fresh-install and run guide.
+On Windows, run `START.exe` from the extracted repository to install
+and start the local store with progress and prerequisite checks.
 
 ROLX includes a storefront, watch catalog, browser cart, checkout, and contact page. NestJS serves the catalog from MongoDB. See the [project plan](docs/project-analysis.md) for integration and remaining work.
 
